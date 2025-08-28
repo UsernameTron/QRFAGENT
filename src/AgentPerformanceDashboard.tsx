@@ -16,26 +16,55 @@ const AgentPerformanceDashboard = () => {
   const [showFormulas, setShowFormulas] = useState(false);
   const [sortBy, setSortBy] = useState('interactions'); // interactions, handleTime, efficiency
 
-  // Professional dark theme colors
+  // Google Material Design inspired dark theme colors
   const colors = {
-    bg: '#0b1220',
-    panel: '#121a2b',
-    panel2: '#161f33',
-    ink: '#e7eefc',
-    muted: '#a9b6d2',
-    accent: '#5b9cff',
-    accent2: '#22d1b0',
-    warn: '#ff6b6b',
-    ok: '#9aff78',
+    // Backgrounds - Rich dark with subtle gradients
+    bg: '#0f0f0f',
+    bgGradient: 'linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%)',
+    panel: '#1e1e1e',
+    panel2: '#2d2d2d',
+    panelHover: '#383838',
+    
+    // Text colors
+    ink: '#ffffff',
+    muted: '#9aa0a6',
+    subtle: '#5f6368',
+    
+    // Google brand colors
+    primary: '#4285f4',      // Google Blue
+    primaryHover: '#3367d6',
+    secondary: '#34a853',    // Google Green  
+    secondaryHover: '#1e8e3e',
+    accent: '#ea4335',       // Google Red
+    accentHover: '#d73527',
+    warning: '#fbbc05',      // Google Yellow
+    warningHover: '#f9ab00',
+    
+    // Status colors
+    success: '#34a853',
+    error: '#ea4335',
+    info: '#4285f4',
+    
+    // Performance tiers
     gold: '#ffd700',
-    silver: '#c0c0c0',
+    silver: '#c4c4c4',
     bronze: '#cd7f32',
-    blue: '#2b87ff',
-    blueDark: '#2464d6',
-    borderColor: '#24314e',
-    chipBg: '#1a2440',
-    chipBorder: '#253255',
-    chipText: '#b9c7e6'
+    
+    // UI elements
+    borderColor: '#3c4043',
+    dividerColor: '#5f6368',
+    chipBg: '#2d2d2d',
+    chipBorder: '#5f6368',
+    chipText: '#e8eaed',
+    
+    // Interactive states
+    hover: 'rgba(255,255,255,0.08)',
+    active: 'rgba(255,255,255,0.12)',
+    focus: 'rgba(66,133,244,0.3)',
+    
+    // Shadows
+    shadow: '0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15)',
+    shadowLarge: '0 2px 6px 2px rgba(0, 0, 0, 0.15), 0 8px 24px 4px rgba(0, 0, 0, 0.3)'
   };
 
   // Formulas documentation for agent metrics
@@ -324,32 +353,68 @@ const AgentPerformanceDashboard = () => {
 
   const MetricCard = ({ title, value, subtitle, icon: Icon, trend, formula }: MetricCardProps) => (
     <div 
-      className="rounded-2xl p-5 relative overflow-hidden"
+      className="rounded-xl p-6 relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg group"
       style={{ 
-        background: `linear-gradient(180deg, ${colors.panel}, ${colors.panel2})`,
+        background: colors.panel,
         border: `1px solid ${colors.borderColor}`,
-        boxShadow: '0 10px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.02)'
+        boxShadow: colors.shadow
       }}
     >
       {Icon && (
-        <div className="absolute top-4 right-4">
-          <Icon className="w-5 h-5" style={{ color: colors.accent2 }} />
+        <div className="absolute top-5 right-5 transition-all duration-300 group-hover:scale-110">
+          <div 
+            className="p-2 rounded-lg"
+            style={{ 
+              backgroundColor: `${colors.primary}20`,
+              border: `1px solid ${colors.primary}40`
+            }}
+          >
+            <Icon className="w-5 h-5" style={{ color: colors.primary }} />
+          </div>
         </div>
       )}
-      <div className="text-sm font-medium mb-2" style={{ color: colors.muted }}>{title}</div>
-      <div className="text-3xl font-bold mb-1" style={{ color: colors.ink }}>{value}</div>
-      {subtitle && <div className="text-xs" style={{ color: colors.muted }}>{subtitle}</div>}
+      <div className="mb-3">
+        <div 
+          className="text-sm font-medium tracking-wide uppercase" 
+          style={{ color: colors.muted }}
+        >
+          {title}
+        </div>
+      </div>
+      <div 
+        className="text-3xl font-bold mb-2 transition-colors duration-300" 
+        style={{ color: colors.ink }}
+      >
+        {value}
+      </div>
+      {subtitle && (
+        <div 
+          className="text-sm leading-relaxed" 
+          style={{ color: colors.subtle }}
+        >
+          {subtitle}
+        </div>
+      )}
       {formula && showFormulas && (
-        <div className="mt-2 text-xs p-2 rounded" style={{ 
-          backgroundColor: `${colors.chipBg}60`,
-          color: colors.accent,
-          border: `1px solid ${colors.borderColor}`
-        }}>
-          📐 {formula}
+        <div 
+          className="mt-3 text-xs p-3 rounded-lg transition-all duration-300" 
+          style={{ 
+            backgroundColor: `${colors.info}15`,
+            color: colors.info,
+            border: `1px solid ${colors.info}30`
+          }}
+        >
+          <span className="font-mono">📐 {formula}</span>
         </div>
       )}
       {trend !== undefined && (
-        <div className="absolute bottom-4 right-4" style={{ color: trend > 0 ? colors.ok : colors.warn }}>
+        <div 
+          className="absolute bottom-5 right-5 p-1 rounded-full transition-all duration-300" 
+          style={{ 
+            backgroundColor: trend > 0 ? `${colors.success}20` : `${colors.error}20`,
+            color: trend > 0 ? colors.success : colors.error
+          }}
+        >
           {trend > 0 ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </div>
       )}
@@ -363,11 +428,12 @@ const AgentPerformanceDashboard = () => {
 
   const Chip = ({ children, color = colors.chipBg }: ChipProps) => (
     <span 
-      className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium"
+      className="inline-flex items-center px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105"
       style={{ 
         backgroundColor: color,
         color: colors.chipText,
-        border: `1px solid ${colors.chipBorder}`
+        border: `1px solid ${colors.borderColor}`,
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)'
       }}
     >
       {children}
@@ -451,7 +517,7 @@ const AgentPerformanceDashboard = () => {
           <div className="text-right">
             <div className="text-xs" style={{ color: colors.muted }}>Efficiency</div>
             <div className="text-xl font-bold" style={{ 
-              color: agent.efficiencyScore >= 100 ? colors.ok : colors.warn 
+              color: agent.efficiencyScore >= 100 ? colors.success : colors.error 
             }}>
               {agent.efficiencyScore}%
             </div>
@@ -467,7 +533,7 @@ const AgentPerformanceDashboard = () => {
           </div>
           <div>
             <div className="text-xs" style={{ color: colors.muted }}>AHT</div>
-            <div className="font-semibold" style={{ color: colors.accent2 }}>
+            <div className="font-semibold" style={{ color: colors.secondary }}>
               {formatTime(agent.avgHandleTime)}
             </div>
           </div>
@@ -493,8 +559,8 @@ const AgentPerformanceDashboard = () => {
             <span 
               className="px-2 py-1 rounded text-xs"
               style={{ 
-                backgroundColor: `${colors.accent2}20`,
-                color: colors.accent2
+                backgroundColor: `${colors.secondary}20`,
+                color: colors.secondary
               }}
             >
               {agent.utilizationRate}% Utilized
@@ -510,9 +576,7 @@ const AgentPerformanceDashboard = () => {
       <div 
         className="min-h-screen"
         style={{ 
-          background: `radial-gradient(1200px 600px at 10% -10%, #182442 0%, transparent 55%),
-                       radial-gradient(800px 400px at 110% 10%, #1b2a4d 0%, transparent 55%),
-                       ${colors.bg}`,
+          background: colors.bgGradient,
           color: colors.ink,
           fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
         }}
@@ -527,8 +591,8 @@ const AgentPerformanceDashboard = () => {
           
           <div className="text-center py-16">
             <div className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center" 
-                 style={{ backgroundColor: `${colors.warn}20`, border: `2px solid ${colors.warn}` }}>
-              <AlertTriangle className="w-8 h-8" style={{ color: colors.warn }} />
+                 style={{ backgroundColor: `${colors.error}20`, border: `2px solid ${colors.error}` }}>
+              <AlertTriangle className="w-8 h-8" style={{ color: colors.error }} />
             </div>
             <h2 className="text-xl font-bold mb-4">Error Processing File</h2>
             <p className="text-lg mb-6" style={{ color: colors.muted }}>{error}</p>
@@ -552,32 +616,36 @@ const AgentPerformanceDashboard = () => {
     <div 
       className="min-h-screen" 
       style={{ 
-        background: `radial-gradient(1200px 600px at 10% -10%, #182442 0%, transparent 55%),
-                     radial-gradient(800px 400px at 110% 10%, #1b2a4d 0%, transparent 55%),
-                     ${colors.bg}`,
+        background: colors.bgGradient,
         color: colors.ink,
         fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
       }}
     >
       <div className="max-w-7xl mx-auto px-7 py-7">
         {/* Header */}
-        <header className="flex items-center gap-4 flex-wrap mb-6">
-          <Chip>👥 Workforce Management</Chip>
-          <h1 className="text-3xl font-bold m-0" style={{ color: colors.ink }}>
-            Agent Performance & Optimization Dashboard
-          </h1>
-          <div className="text-sm" style={{ color: colors.muted }}>
-            Call center workforce analytics • Performance tracking • Coaching insights
+        <header className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <Chip>
+              <span className="flex items-center gap-2">
+                👥 <span className="font-semibold">Workforce Analytics</span>
+              </span>
+            </Chip>
           </div>
+          <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            Agent Performance Dashboard
+          </h1>
+          <p className="text-lg leading-relaxed mb-6" style={{ color: colors.muted }}>
+            Comprehensive call center workforce analytics, performance tracking, and coaching insights
+          </p>
           {data && (
-            <div className="ml-auto flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <button
                 onClick={() => setShowFormulas(!showFormulas)}
-                className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-90 flex items-center gap-2"
+                className="px-5 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 flex items-center gap-2 shadow-md hover:shadow-lg"
                 style={{ 
-                  background: showFormulas ? colors.accent2 : colors.chipBg,
-                  color: showFormulas ? 'white' : colors.chipText,
-                  border: `1px solid ${showFormulas ? colors.accent2 : colors.chipBorder}`
+                  background: showFormulas ? colors.primary : colors.panel,
+                  color: showFormulas ? 'white' : colors.ink,
+                  border: `1px solid ${showFormulas ? colors.primary : colors.borderColor}`
                 }}
               >
                 <Calculator className="w-4 h-4" />
@@ -585,14 +653,14 @@ const AgentPerformanceDashboard = () => {
               </button>
               <label className="cursor-pointer">
                 <div 
-                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
+                  className="px-5 py-3 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 shadow-md hover:shadow-lg"
                   style={{ 
-                    background: `linear-gradient(135deg, ${colors.accent}, ${colors.blue})`,
+                    background: colors.primary,
                     color: 'white',
-                    boxShadow: '0 2px 8px rgba(91, 156, 255, 0.3)'
+                    border: `1px solid ${colors.primaryHover}`
                   }}
                 >
-                  Upload New File
+                  📁 Upload New File
                 </div>
                 <input
                   type="file"
@@ -610,35 +678,40 @@ const AgentPerformanceDashboard = () => {
         {!data && !isLoading && (
           <div className="mb-8">
             <div 
-              className="rounded-2xl p-16 text-center border-2 border-dashed transition-all hover:opacity-90"
+              className="rounded-2xl p-20 text-center border-2 border-dashed transition-all duration-300 hover:border-opacity-80"
               style={{ 
-                background: `linear-gradient(180deg, ${colors.panel}, ${colors.panel2})`,
-                borderColor: colors.accent,
-                boxShadow: '0 10px 24px rgba(0,0,0,.35)'
+                background: colors.panel,
+                borderColor: colors.primary,
+                boxShadow: colors.shadow
               }}
             >
-              <div className="w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center" 
-                   style={{ backgroundColor: `${colors.accent}20`, border: `2px solid ${colors.accent}` }}>
-                <Users className="w-8 h-8" style={{ color: colors.accent }} />
+              <div className="w-20 h-20 mx-auto mb-8 rounded-2xl flex items-center justify-center transition-transform duration-300 hover:scale-110" 
+                   style={{ 
+                     background: `linear-gradient(135deg, ${colors.primary}20, ${colors.primary}10)`,
+                     border: `2px solid ${colors.primary}40`
+                   }}>
+                <Users className="w-10 h-10" style={{ color: colors.primary }} />
               </div>
               
-              <h2 className="text-2xl font-bold mb-3" style={{ color: colors.ink }}>
+              <h2 className="text-3xl font-bold mb-4" style={{ color: colors.ink }}>
                 Upload Agent Performance Data
               </h2>
-              <p className="text-lg mb-6" style={{ color: colors.muted }}>
-                Select a CSV file containing agent interaction data
+              <p className="text-lg mb-8 max-w-md mx-auto leading-relaxed" style={{ color: colors.muted }}>
+                Drag and drop your CSV file here, or click to select agent interaction data
               </p>
               
-              <label className="inline-block cursor-pointer">
+              <label className="inline-block cursor-pointer group">
                 <div 
-                  className="px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95"
+                  className="px-8 py-4 rounded-lg font-medium transition-all duration-200 group-hover:scale-105 group-active:scale-95 shadow-lg group-hover:shadow-xl"
                   style={{ 
-                    background: `linear-gradient(135deg, ${colors.accent}, ${colors.blue})`,
+                    background: colors.primary,
                     color: 'white',
-                    boxShadow: '0 4px 15px rgba(91, 156, 255, 0.4)'
+                    border: `1px solid ${colors.primaryHover}`
                   }}
                 >
-                  Choose CSV File
+                  <span className="flex items-center gap-2">
+                    📁 Choose CSV File
+                  </span>
                 </div>
                 <input
                   type="file"
@@ -677,15 +750,16 @@ const AgentPerformanceDashboard = () => {
             {showFormulas && <FormulasPanel />}
 
             {/* Filters and Controls */}
-            <div className="flex gap-3 mb-6 flex-wrap">
+            <div className="flex gap-4 mb-8 flex-wrap">
               <select
                 value={selectedQueue}
                 onChange={(e) => setSelectedQueue(e.target.value)}
-                className="px-4 py-2.5 rounded-xl text-sm font-medium outline-none"
+                className="px-4 py-3 rounded-lg text-sm font-medium outline-none cursor-pointer transition-all duration-200 hover:shadow-md focus:ring-2"
                 style={{ 
-                  background: colors.chipBg,
-                  color: colors.chipText,
-                  border: `1px solid ${colors.chipBorder}`
+                  background: colors.panel,
+                  color: colors.ink,
+                  border: `1px solid ${colors.borderColor}`,
+                  boxShadow: colors.shadow
                 }}
               >
                 <option value="all">All Queues ({uniqueQueues.length})</option>
@@ -697,11 +771,12 @@ const AgentPerformanceDashboard = () => {
               <select
                 value={selectedMediaType}
                 onChange={(e) => setSelectedMediaType(e.target.value)}
-                className="px-4 py-2.5 rounded-xl text-sm font-medium outline-none"
+                className="px-4 py-3 rounded-lg text-sm font-medium outline-none cursor-pointer transition-all duration-200 hover:shadow-md focus:ring-2"
                 style={{ 
-                  background: colors.chipBg,
-                  color: colors.chipText,
-                  border: `1px solid ${colors.chipBorder}`
+                  background: colors.panel,
+                  color: colors.ink,
+                  border: `1px solid ${colors.borderColor}`,
+                  boxShadow: colors.shadow
                 }}
               >
                 <option value="all">All Media Types ({uniqueMediaTypes.length})</option>
@@ -713,11 +788,12 @@ const AgentPerformanceDashboard = () => {
               <select
                 value={selectedAgent}
                 onChange={(e) => setSelectedAgent(e.target.value)}
-                className="px-4 py-2.5 rounded-xl text-sm font-medium outline-none"
+                className="px-4 py-3 rounded-lg text-sm font-medium outline-none cursor-pointer transition-all duration-200 hover:shadow-md focus:ring-2"
                 style={{ 
-                  background: colors.chipBg,
-                  color: colors.chipText,
-                  border: `1px solid ${colors.chipBorder}`
+                  background: colors.panel,
+                  color: colors.ink,
+                  border: `1px solid ${colors.borderColor}`,
+                  boxShadow: colors.shadow
                 }}
               >
                 <option value="all">All Agents ({uniqueAgents.length})</option>
@@ -729,11 +805,12 @@ const AgentPerformanceDashboard = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2.5 rounded-xl text-sm font-medium outline-none"
+                className="px-4 py-3 rounded-lg text-sm font-medium outline-none cursor-pointer transition-all duration-200 hover:shadow-md focus:ring-2"
                 style={{ 
-                  background: colors.chipBg,
-                  color: colors.chipText,
-                  border: `1px solid ${colors.chipBorder}`
+                  background: colors.panel,
+                  color: colors.ink,
+                  border: `1px solid ${colors.borderColor}`,
+                  boxShadow: colors.shadow
                 }}
               >
                 <option value="interactions">Sort by Interactions</option>
@@ -876,11 +953,11 @@ const AgentPerformanceDashboard = () => {
                           <td className="px-6 py-4 text-center text-sm font-semibold" style={{ color: colors.ink }}>
                             {agent.totalInteractions.toLocaleString()}
                           </td>
-                          <td className="px-6 py-4 text-center text-sm" style={{ color: colors.ok }}>
+                          <td className="px-6 py-4 text-center text-sm" style={{ color: colors.success }}>
                             {agent.handledInteractions.toLocaleString()}
                           </td>
                           <td className="px-6 py-4 text-center text-sm" style={{ 
-                            color: agent.avgHandleTime <= agentMetrics.teamAvgHandleTime ? colors.ok : colors.warn 
+                            color: agent.avgHandleTime <= agentMetrics.teamAvgHandleTime ? colors.success : colors.error 
                           }}>
                             {formatTime(agent.avgHandleTime)}
                           </td>
@@ -888,8 +965,8 @@ const AgentPerformanceDashboard = () => {
                             <span 
                               className="px-3 py-1 rounded-full text-xs font-bold"
                               style={{ 
-                                backgroundColor: agent.efficiencyScore >= 100 ? `${colors.ok}20` : `${colors.warn}20`,
-                                color: agent.efficiencyScore >= 100 ? colors.ok : colors.warn
+                                backgroundColor: agent.efficiencyScore >= 100 ? `${colors.success}20` : `${colors.error}20`,
+                                color: agent.efficiencyScore >= 100 ? colors.success : colors.error
                               }}
                             >
                               {agent.efficiencyScore}%
@@ -898,7 +975,7 @@ const AgentPerformanceDashboard = () => {
                           <td className="px-6 py-4 text-center text-sm" style={{ color: colors.accent }}>
                             {agent.interactionsPerHour}
                           </td>
-                          <td className="px-6 py-4 text-center text-sm" style={{ color: colors.accent2 }}>
+                          <td className="px-6 py-4 text-center text-sm" style={{ color: colors.secondary }}>
                             {agent.utilizationRate}%
                           </td>
                           <td className="px-6 py-4 text-center text-sm font-medium" style={{ color: colors.ink }}>
@@ -933,7 +1010,7 @@ const AgentPerformanceDashboard = () => {
                 }}
               >
                 <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: colors.ink }}>
-                  <BookOpen className="w-5 h-5" style={{ color: colors.warn }} />
+                  <BookOpen className="w-5 h-5" style={{ color: colors.error }} />
                   Coaching Opportunities
                 </h2>
                 <p className="text-sm mb-4" style={{ color: colors.muted }}>
@@ -949,8 +1026,8 @@ const AgentPerformanceDashboard = () => {
                         key={agent.name}
                         className="p-4 rounded-xl"
                         style={{ 
-                          backgroundColor: `${colors.warn}10`,
-                          border: `1px solid ${colors.warn}40`
+                          backgroundColor: `${colors.error}10`,
+                          border: `1px solid ${colors.error}40`
                         }}
                       >
                         <div className="flex justify-between items-start">
@@ -964,7 +1041,7 @@ const AgentPerformanceDashboard = () => {
                           </div>
                           <div className="text-right">
                             <div className="text-xs" style={{ color: colors.muted }}>Needs Improvement</div>
-                            <div className="text-lg font-bold" style={{ color: colors.warn }}>
+                            <div className="text-lg font-bold" style={{ color: colors.error }}>
                               {agent.efficiencyScore}%
                             </div>
                           </div>
@@ -977,7 +1054,7 @@ const AgentPerformanceDashboard = () => {
                 </div>
                 
                 {agentMetrics.agents.filter(a => a.efficiencyScore < 85 && a.handledInteractions >= 10).length === 0 && (
-                  <div className="text-center py-8" style={{ color: colors.ok }}>
+                  <div className="text-center py-8" style={{ color: colors.success }}>
                     <CheckCircle className="w-12 h-12 mx-auto mb-2" />
                     <p>All agents are performing above coaching threshold!</p>
                   </div>
