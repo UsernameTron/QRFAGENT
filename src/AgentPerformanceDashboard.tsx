@@ -16,38 +16,50 @@ const AgentPerformanceDashboard = () => {
   const [showFormulas, setShowFormulas] = useState(false);
   const [sortBy, setSortBy] = useState('interactions'); // interactions, handleTime, efficiency
 
-  // Ultra-clean, sleek design system
+  // Advanced organic design system with dynamic backgrounds
   const colors = {
-    // Backgrounds - Clean and minimal
+    // Backgrounds - Dynamic and organic
     bg: '#000000',
-    bgPattern: 'radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 0%, transparent 50%)',
-    card: 'rgba(255, 255, 255, 0.03)',
-    cardHover: 'rgba(255, 255, 255, 0.06)',
+    bgPattern: `
+      radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 60%),
+      radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
+      linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%)
+    `,
+    card: 'rgba(255, 255, 255, 0.04)',
+    cardHover: 'rgba(255, 255, 255, 0.08)',
     
-    // Text - High contrast for readability
+    // Text - High contrast with subtle gradients
     primary: '#ffffff',
     secondary: '#a3a3a3',
     tertiary: '#6b7280',
     
-    // Accent colors - Refined palette
+    // Refined accent palette with organic variations
     blue: '#3b82f6',
+    blueGlow: 'rgba(59, 130, 246, 0.2)',
     green: '#10b981',
+    greenGlow: 'rgba(16, 185, 129, 0.2)',
     red: '#ef4444',
+    redGlow: 'rgba(239, 68, 68, 0.2)',
     yellow: '#f59e0b',
     purple: '#8b5cf6',
+    purpleGlow: 'rgba(139, 92, 246, 0.2)',
     
-    // UI elements - Subtle and refined
-    border: 'rgba(255, 255, 255, 0.08)',
-    borderActive: 'rgba(255, 255, 255, 0.16)',
+    // UI elements with organic feel
+    border: 'rgba(255, 255, 255, 0.1)',
+    borderActive: 'rgba(255, 255, 255, 0.2)',
     
     // Interactive states
-    hover: 'rgba(255, 255, 255, 0.04)',
-    active: 'rgba(255, 255, 255, 0.08)',
+    hover: 'rgba(255, 255, 255, 0.06)',
+    active: 'rgba(255, 255, 255, 0.12)',
     
-    // Performance tiers
+    // Performance tiers with glow effects
     gold: '#fbbf24',
+    goldGlow: 'rgba(251, 191, 36, 0.3)',
     silver: '#d1d5db',
-    bronze: '#d97706'
+    silverGlow: 'rgba(209, 213, 219, 0.2)',
+    bronze: '#d97706',
+    bronzeGlow: 'rgba(217, 119, 6, 0.2)'
   };
 
   // Formulas documentation for agent metrics
@@ -334,77 +346,106 @@ const AgentPerformanceDashboard = () => {
     formula?: string | null;
   }
 
-  const MetricCard = ({ title, value, subtitle, icon: Icon, trend, formula }: MetricCardProps) => (
-    <div 
-      className="group relative"
-    >
-      <div
-        className="h-full p-6 rounded-2xl backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 border"
-        style={{ 
-          background: colors.card,
-          borderColor: colors.border
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.background = colors.cardHover;
-          e.currentTarget.style.borderColor = colors.borderActive;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = colors.card;
-          e.currentTarget.style.borderColor = colors.border;
+  const MetricCard = ({ title, value, subtitle, icon: Icon, trend, formula }: MetricCardProps) => {
+    // Generate organic variations for each card
+    const cardVariations = [
+      { rotation: '1deg', borderRadius: '24px 12px 18px 20px', animationDelay: '0s' },
+      { rotation: '-0.5deg', borderRadius: '16px 28px 14px 24px', animationDelay: '0.1s' },
+      { rotation: '1.2deg', borderRadius: '20px 16px 26px 18px', animationDelay: '0.2s' },
+      { rotation: '-0.8deg', borderRadius: '22px 20px 16px 28px', animationDelay: '0.3s' }
+    ];
+    
+    const randomVariation = cardVariations[Math.floor(Math.random() * cardVariations.length)];
+    
+    return (
+      <div 
+        className="group relative organic-card"
+        style={{
+          transform: `rotate(${randomVariation.rotation})`,
+          animationDelay: randomVariation.animationDelay
         }}
       >
-        {Icon && (
-          <div className="mb-6 inline-flex">
-            <Icon 
-              className="w-6 h-6 transition-all duration-300 group-hover:scale-110" 
-              style={{ color: colors.blue }} 
-            />
-          </div>
-        )}
-        
-        <div className="space-y-2">
-          <h3 
-            className="text-sm font-medium tracking-tight" 
-            style={{ color: colors.secondary }}
-          >
-            {title}
-          </h3>
-          
+        <div
+          className="h-full p-6 backdrop-blur-sm transition-all duration-700 hover:-translate-y-2 hover:rotate-0 border relative overflow-hidden"
+          style={{ 
+            background: colors.card,
+            borderColor: colors.border,
+            borderRadius: randomVariation.borderRadius,
+            willChange: 'transform, background-color'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = colors.cardHover;
+            e.currentTarget.style.borderColor = colors.borderActive;
+            e.currentTarget.style.transform = 'translateY(-8px) scale(1.02) rotate(0deg)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = colors.card;
+            e.currentTarget.style.borderColor = colors.border;
+            e.currentTarget.style.transform = 'translateY(0px) scale(1) rotate(0deg)';
+          }}
+        >
+          {/* Organic background shape */}
           <div 
-            className="text-2xl font-semibold tracking-tight" 
-            style={{ color: colors.primary }}
-          >
-            {value}
-          </div>
+            className="absolute inset-0 opacity-10 transition-all duration-700 group-hover:opacity-20"
+            style={{
+              background: `radial-gradient(circle at 30% 70%, ${colors.blue}40, transparent 50%)`,
+              clipPath: 'ellipse(60% 40% at 20% 80%)'
+            }}
+          />
           
-          {subtitle && (
-            <p 
-              className="text-sm leading-relaxed" 
-              style={{ color: colors.tertiary }}
+          {Icon && (
+            <div className="mb-6 inline-flex relative z-10">
+              <Icon 
+                className="w-6 h-6 transition-all duration-500 group-hover:scale-125 group-hover:rotate-12" 
+                style={{ color: colors.blue }} 
+              />
+            </div>
+          )}
+          
+          <div className="space-y-2 relative z-10">
+            <h3 
+              className="text-sm font-medium tracking-tight transition-all duration-300 group-hover:text-opacity-90" 
+              style={{ color: colors.secondary }}
             >
-              {subtitle}
-            </p>
+              {title}
+            </h3>
+            
+            <div 
+              className="text-2xl font-semibold tracking-tight transition-all duration-300 group-hover:scale-105" 
+              style={{ color: colors.primary }}
+            >
+              {value}
+            </div>
+            
+            {subtitle && (
+              <p 
+                className="text-sm leading-relaxed transition-all duration-300" 
+                style={{ color: colors.tertiary }}
+              >
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          {trend !== undefined && (
+            <div className="absolute top-6 right-6 z-10">
+              <div 
+                className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-500 group-hover:scale-110 group-hover:rotate-12"
+                style={{ 
+                  background: `linear-gradient(135deg, ${trend > 0 ? colors.green : colors.red}20, ${trend > 0 ? colors.green : colors.red}10)`
+                }}
+              >
+                {trend > 0 ? 
+                  <ChevronUp className="w-4 h-4" style={{ color: colors.green }} /> : 
+                  <ChevronDown className="w-4 h-4" style={{ color: colors.red }} />
+                }
+              </div>
+            </div>
           )}
         </div>
-
-        {trend !== undefined && (
-          <div className="absolute top-6 right-6">
-            <div 
-              className="flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300"
-              style={{ 
-                backgroundColor: trend > 0 ? `${colors.green}20` : `${colors.red}20`
-              }}
-            >
-              {trend > 0 ? 
-                <ChevronUp className="w-4 h-4" style={{ color: colors.green }} /> : 
-                <ChevronDown className="w-4 h-4" style={{ color: colors.red }} />
-              }
-            </div>
-          </div>
-        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   interface ChipProps {
     children: React.ReactNode;
@@ -422,6 +463,36 @@ const AgentPerformanceDashboard = () => {
     >
       {children}
     </span>
+  );
+
+  const FlowingDivider = () => (
+    <div className="w-full h-24 my-16 relative overflow-hidden">
+      <svg 
+        className="w-full h-full"
+        viewBox="0 0 1200 100" 
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <linearGradient id="flowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style={{ stopColor: colors.blue, stopOpacity: 0.1 }} />
+            <stop offset="50%" style={{ stopColor: colors.purple, stopOpacity: 0.2 }} />
+            <stop offset="100%" style={{ stopColor: colors.green, stopOpacity: 0.1 }} />
+          </linearGradient>
+        </defs>
+        <path 
+          d="M0,50 Q300,10 600,50 T1200,50 L1200,100 L0,100 Z"
+          fill="url(#flowGradient)"
+          className="animate-pulse"
+        />
+        <path 
+          d="M0,60 Q400,20 800,60 T1200,60"
+          stroke={colors.border}
+          strokeWidth="1"
+          fill="none"
+          opacity="0.3"
+        />
+      </svg>
+    </div>
   );
 
   const FormulasPanel = () => (
@@ -463,92 +534,174 @@ const AgentPerformanceDashboard = () => {
     </div>
   );
 
-  // Agent Performance Card Component
+  // Enhanced organic agent card with mini visualizations
   const AgentCard = ({ agent, rank }: any) => {
     const tierColor = getTierColor(agent.performanceTier);
+    const cardRotations = ['-1.5deg', '0.8deg', '-0.3deg', '1.2deg', '-0.7deg'];
+    const cardRotation = cardRotations[rank % cardRotations.length];
     
     return (
       <div 
-        className="rounded-xl p-4 relative"
-        style={{ 
-          background: `linear-gradient(135deg, ${colors.card}, ${colors.cardHover})`,
-          border: `2px solid ${agent.performanceTier === 'gold' ? colors.gold : colors.border}`,
-          boxShadow: agent.performanceTier === 'gold' ? `0 0 20px ${colors.gold}40` : '0 5px 15px rgba(0,0,0,.3)'
+        className="group organic-agent-card relative"
+        style={{
+          transform: `rotate(${cardRotation})`,
+          transformOrigin: 'center center'
         }}
       >
-        <div className="flex justify-between items-start mb-3">
-          <div className="flex items-center gap-2">
-            <div 
-              className="text-lg font-bold rounded-full w-8 h-8 flex items-center justify-center"
-              style={{ 
-                backgroundColor: `${tierColor}20`,
-                color: tierColor,
-                border: `1px solid ${tierColor}`
-              }}
-            >
-              {rank}
-            </div>
-            <div>
-              <div className="font-semibold flex items-center gap-2" style={{ color: colors.primary }}>
-                {agent.name.length > 20 ? agent.name.substring(0, 20) + '...' : agent.name}
-                {getTierIcon(agent.performanceTier)}
-              </div>
-              <div className="text-xs" style={{ color: colors.secondary }}>
-                {agent.daysWorked} days active • {agent.uniqueQueues} queues
-              </div>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-xs" style={{ color: colors.secondary }}>Efficiency</div>
-            <div className="text-xl font-bold" style={{ 
-              color: agent.efficiencyScore >= 100 ? colors.green : colors.red 
-            }}>
-              {agent.efficiencyScore}%
-            </div>
-          </div>
-        </div>
+        <div
+          className="p-6 relative backdrop-blur-sm transition-all duration-500 hover:-translate-y-3 hover:rotate-0 border overflow-hidden"
+          style={{ 
+            background: colors.card,
+            border: `1px solid ${agent.performanceTier === 'gold' ? colors.gold : colors.border}`,
+            borderRadius: '28px 16px 24px 20px',
+            boxShadow: agent.performanceTier === 'gold' ? 
+              `0 8px 32px ${colors.gold}30, 0 0 0 1px ${colors.gold}20` : 
+              `0 4px 20px rgba(0,0,0,.2)`
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-12px) scale(1.02) rotate(0deg)';
+            e.currentTarget.style.borderColor = agent.performanceTier === 'gold' ? colors.gold : colors.borderActive;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0px) scale(1) rotate(0deg)';
+            e.currentTarget.style.borderColor = agent.performanceTier === 'gold' ? colors.gold : colors.border;
+          }}
+        >
+          {/* Organic background pattern */}
+          <div 
+            className="absolute inset-0 opacity-5 transition-all duration-500 group-hover:opacity-10"
+            style={{
+              background: `radial-gradient(circle at 80% 20%, ${tierColor}, transparent 60%)`,
+              clipPath: 'ellipse(70% 50% at 30% 80%)'
+            }}
+          />
 
-        <div className="grid grid-cols-3 gap-2 mb-3">
-          <div>
-            <div className="text-xs" style={{ color: colors.secondary }}>Handled</div>
-            <div className="font-semibold" style={{ color: colors.red }}>
-              {agent.handledInteractions}
+          {/* Header with rank and tier */}
+          <div className="flex justify-between items-start mb-6 relative z-10">
+            <div className="flex items-center gap-3">
+              {/* Organic rank badge */}
+              <div 
+                className="text-sm font-bold flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:rotate-12"
+                style={{ 
+                  width: '32px',
+                  height: '32px',
+                  background: `linear-gradient(135deg, ${tierColor}20, ${tierColor}10)`,
+                  color: tierColor,
+                  border: `1px solid ${tierColor}40`,
+                  borderRadius: '12px 6px 10px 8px'
+                }}
+              >
+                #{rank}
+              </div>
+              
+              {/* Agent name and info */}
+              <div>
+                <div className="font-semibold flex items-center gap-2 text-base" style={{ color: colors.primary }}>
+                  {agent.name.length > 18 ? agent.name.substring(0, 18) + '...' : agent.name}
+                  {getTierIcon(agent.performanceTier)}
+                </div>
+                <div className="text-xs mt-1" style={{ color: colors.tertiary }}>
+                  {agent.daysWorked} days • {agent.uniqueQueues} queues
+                </div>
+              </div>
             </div>
-          </div>
-          <div>
-            <div className="text-xs" style={{ color: colors.secondary }}>AHT</div>
-            <div className="font-semibold" style={{ color: colors.secondary }}>
-              {formatTime(agent.avgHandleTime)}
-            </div>
-          </div>
-          <div>
-            <div className="text-xs" style={{ color: colors.secondary }}>Per Hour</div>
-            <div className="font-semibold" style={{ color: colors.primary }}>
-              {agent.interactionsPerHour}
-            </div>
-          </div>
-        </div>
 
-        <div className="flex justify-between items-center pt-2" style={{ borderTop: `1px solid ${colors.border}` }}>
-          <div className="flex gap-2">
-            <span 
-              className="px-2 py-1 rounded text-xs"
-              style={{ 
-                backgroundColor: `${colors.red}20`,
-                color: colors.red
-              }}
-            >
-              {agent.productivityRate}% Productive
-            </span>
-            <span 
-              className="px-2 py-1 rounded text-xs"
-              style={{ 
-                backgroundColor: `${colors.secondary}20`,
-                color: colors.secondary
-              }}
-            >
-              {agent.utilizationRate}% Utilized
-            </span>
+            {/* Circular progress for efficiency */}
+            <div className="relative w-12 h-12">
+              <svg className="w-12 h-12 transform -rotate-90">
+                <circle
+                  cx="24"
+                  cy="24"
+                  r="20"
+                  stroke={colors.border}
+                  strokeWidth="3"
+                  fill="transparent"
+                />
+                <circle
+                  cx="24"
+                  cy="24"
+                  r="20"
+                  stroke={agent.efficiencyScore >= 100 ? colors.green : colors.red}
+                  strokeWidth="3"
+                  fill="transparent"
+                  strokeDasharray={`${Math.min(agent.efficiencyScore, 100) * 1.25} 125`}
+                  strokeLinecap="round"
+                  className="transition-all duration-1000"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-xs font-bold" style={{ color: colors.primary }}>
+                  {agent.efficiencyScore}%
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Performance metrics in organic layout */}
+          <div className="space-y-4 mb-6 relative z-10">
+            {/* Handled interactions with mini bar */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium" style={{ color: colors.secondary }}>
+                Interactions
+              </span>
+              <div className="flex items-center gap-2">
+                <div 
+                  className="h-2 rounded-full transition-all duration-1000 group-hover:scale-105"
+                  style={{ 
+                    width: '60px',
+                    background: `linear-gradient(90deg, ${colors.blue}40, ${colors.blue})`,
+                    transform: `scaleX(${Math.min(agent.handledInteractions / 100, 1)})`
+                  }}
+                />
+                <span className="text-sm font-semibold" style={{ color: colors.primary }}>
+                  {agent.handledInteractions}
+                </span>
+              </div>
+            </div>
+
+            {/* Average handle time */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium" style={{ color: colors.secondary }}>
+                Avg Handle Time
+              </span>
+              <span className="text-sm font-semibold" style={{ color: colors.tertiary }}>
+                {formatTime(agent.avgHandleTime)}
+              </span>
+            </div>
+
+            {/* Interactions per hour */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium" style={{ color: colors.secondary }}>
+                Per Hour
+              </span>
+              <span className="text-sm font-semibold" style={{ color: colors.green }}>
+                {agent.interactionsPerHour}
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom metrics */}
+          <div className="pt-4 relative z-10" style={{ borderTop: `1px solid ${colors.border}` }}>
+            <div className="flex justify-between items-center">
+              <div className="flex gap-2">
+                <span 
+                  className="px-2 py-1 rounded-full text-xs font-medium"
+                  style={{ 
+                    backgroundColor: `${colors.blue}15`,
+                    color: colors.blue,
+                    border: `1px solid ${colors.blue}30`
+                  }}
+                >
+                  {agent.productivityRate}% Productive
+                </span>
+              </div>
+              <span 
+                className="text-xs font-medium"
+                style={{ color: colors.tertiary }}
+              >
+                {agent.utilizationRate}% Utilized
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -598,23 +751,82 @@ const AgentPerformanceDashboard = () => {
 
   return (
     <div 
-      className="min-h-screen" 
+      className="min-h-screen relative overflow-hidden" 
       style={{ 
         background: `${colors.bg}, ${colors.bgPattern}`,
         color: colors.primary,
         fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
       }}
     >
-      <div className="max-w-6xl mx-auto px-6 py-12">
-        {/* Header */}
-        <header className="mb-16">
-          <div className="flex items-center justify-between mb-8">
+      {/* Organic background shapes with particle system */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {/* Floating particles */}
+        <div className="particle" />
+        <div className="particle" />
+        <div className="particle" />
+        <div className="particle" />
+        <div className="particle" />
+        
+        {/* Dynamic organic shapes */}
+        <div 
+          className="absolute"
+          style={{
+            top: '10%',
+            left: '5%',
+            width: '400px',
+            height: '300px',
+            background: `radial-gradient(ellipse, ${colors.blueGlow}, transparent 70%)`,
+            clipPath: 'ellipse(60% 40% at 30% 70%)',
+            transform: 'rotate(-15deg)',
+            animation: 'organicPulse 8s ease-in-out infinite, backgroundShift 20s ease-in-out infinite'
+          }}
+        />
+        <div 
+          className="absolute"
+          style={{
+            top: '60%',
+            right: '10%',
+            width: '300px',
+            height: '400px',
+            background: `radial-gradient(ellipse, ${colors.purpleGlow}, transparent 60%)`,
+            clipPath: 'ellipse(50% 60% at 70% 30%)',
+            transform: 'rotate(25deg)',
+            animation: 'organicPulse 12s ease-in-out infinite, backgroundShift 30s ease-in-out infinite',
+            animationDelay: '2s'
+          }}
+        />
+        <div 
+          className="absolute"
+          style={{
+            bottom: '20%',
+            left: '20%',
+            width: '250px',
+            height: '350px',
+            background: `radial-gradient(ellipse, ${colors.greenGlow}, transparent 50%)`,
+            clipPath: 'ellipse(70% 30% at 40% 60%)',
+            transform: 'rotate(-8deg)',
+            animation: 'organicPulse 10s ease-in-out infinite, backgroundShift 25s ease-in-out infinite',
+            animationDelay: '4s'
+          }}
+        />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
+        {/* Header with fluid typography */}
+        <header className="mb-20">
+          <div className="flex items-center justify-between mb-12">
             <div>
-              <h1 className="text-3xl font-medium tracking-tight mb-2" style={{ color: colors.primary }}>
+              <h1 
+                className="fluid-text-3xl font-medium tracking-tight mb-3 bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent"
+                style={{ 
+                  backgroundSize: '200% 200%',
+                  animation: 'backgroundShift 6s ease-in-out infinite'
+                }}
+              >
                 Agent Performance
               </h1>
-              <p className="text-base" style={{ color: colors.secondary }}>
-                Workforce analytics and insights
+              <p className="fluid-text-xl" style={{ color: colors.secondary }}>
+                Organic workforce analytics and insights
               </p>
             </div>
             {data && (
@@ -790,7 +1002,7 @@ const AgentPerformanceDashboard = () => {
             </div>
 
             {/* Workforce Overview KPIs */}
-            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            <section className="flex flex-wrap justify-center gap-8 mb-20" style={{ perspective: '1000px' }}>
               <MetricCard
                 title="Active Agents"
                 value={agentMetrics.workforceStats.totalAgents}
@@ -820,29 +1032,31 @@ const AgentPerformanceDashboard = () => {
               />
             </section>
 
-            {/* Top Performers Section */}
-            <div className="mb-6">
-              <div 
-                className="rounded-2xl p-6"
-                style={{ 
-                  background: `linear-gradient(180deg, ${colors.card}, ${colors.cardHover})`,
-                  border: `1px solid ${colors.border}`,
-                  boxShadow: '0 10px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.02)'
-                }}
-              >
-                <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: colors.primary }}>
-                  <Award className="w-5 h-5" style={{ color: colors.gold }} />
+            {/* Flowing divider */}
+            <FlowingDivider />
+
+            {/* Top Performers Section - Organic Layout */}
+            <div className="mb-16">
+              <div className="mb-12 text-center">
+                <h2 className="text-2xl font-medium tracking-tight mb-3 flex items-center justify-center gap-3" style={{ color: colors.primary }}>
+                  <Award className="w-6 h-6" style={{ color: colors.gold }} />
                   Top Performing Agents
                 </h2>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {agentMetrics.agents
-                    .filter(agent => agent.handledInteractions >= 10) // Minimum threshold
-                    .slice(0, 6)
-                    .map((agent, idx) => (
-                      <AgentCard key={agent.name} agent={agent} rank={idx + 1} />
-                    ))}
-                </div>
+                <p className="text-base" style={{ color: colors.secondary }}>
+                  Outstanding performers driving excellence across the team
+                </p>
+              </div>
+              
+              {/* Organic masonry-style layout */}
+              <div className="organic-grid" style={{ columnCount: 'auto', columnWidth: '320px', columnGap: '2rem' }}>
+                {agentMetrics.agents
+                  .filter(agent => agent.handledInteractions >= 10)
+                  .slice(0, 8)
+                  .map((agent, idx) => (
+                    <div key={agent.name} style={{ breakInside: 'avoid', marginBottom: '2rem' }}>
+                      <AgentCard agent={agent} rank={idx + 1} />
+                    </div>
+                  ))}
               </div>
             </div>
 
