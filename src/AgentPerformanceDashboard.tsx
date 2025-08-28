@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Award, AlertTriangle, Activity, Users, Zap, BarChart3, Star, Shield, BookOpen, ChevronUp, ChevronDown, Calculator, Info, CheckCircle, LucideIcon } from 'lucide-react';
+import { Award, AlertTriangle, Activity, Users, Zap, BarChart3, Star, Shield, BookOpen, ChevronUp, ChevronDown, Calculator, Info, CheckCircle, Target, LucideIcon } from 'lucide-react';
 import Papa from 'papaparse';
 
 interface DataRow {
@@ -494,6 +494,134 @@ const AgentPerformanceDashboard = () => {
       </svg>
     </div>
   );
+
+  interface CoachingFocusCardProps {
+    agent: AgentData;
+    rank: number;
+  }
+
+  const CoachingFocusCard = ({ agent, rank }: CoachingFocusCardProps) => {
+    const improvementAreas = [];
+    if (agent.efficiencyScore < 85) improvementAreas.push('Handle Time');
+    if (agent.productivityRate < 75) improvementAreas.push('Productivity');
+    if (agent.utilizationRate < 70) improvementAreas.push('Utilization');
+    
+    const gapFromTarget = 100 - agent.efficiencyScore;
+    
+    return (
+      <div 
+        className="organic-card organic-agent-card group cursor-pointer transition-all duration-300 hover:scale-105"
+        style={{
+          '--base-rotation': `${(rank % 2 === 0 ? 1 : -1) * (0.5 + rank * 0.3)}deg`
+        }}
+      >
+        <div 
+          className="p-6 h-full glass-morphism relative overflow-hidden"
+          style={{
+            background: `linear-gradient(135deg, 
+              ${colors.red}15 0%, 
+              ${colors.orange}10 50%,
+              ${colors.red}08 100%
+            )`,
+            borderRadius: '24px 16px 28px 20px',
+            border: `2px solid ${colors.red}30`,
+            boxShadow: `
+              0 8px 24px rgba(239, 68, 68, 0.15),
+              0 4px 12px rgba(0, 0, 0, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05)
+            `
+          }}
+        >
+          <div className="absolute top-4 right-4 opacity-30">
+            <BookOpen className="w-8 h-8" style={{ color: colors.red }} />
+          </div>
+          
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div 
+                className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold"
+                style={{ 
+                  background: `linear-gradient(135deg, ${colors.red}40, ${colors.orange}30)`,
+                  color: colors.red,
+                  border: `1px solid ${colors.red}50`
+                }}
+              >
+                {rank}
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm" style={{ color: colors.primary }}>
+                  {agent.name}
+                </h3>
+                <p className="text-xs" style={{ color: colors.red }}>
+                  Coaching Priority
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-xs" style={{ color: colors.secondary }}>Efficiency Gap</span>
+              <span className="font-bold text-lg" style={{ color: colors.red }}>
+                -{gapFromTarget}%
+              </span>
+            </div>
+            
+            <div className="w-full bg-black bg-opacity-30 rounded-full h-2 overflow-hidden">
+              <div 
+                className="h-full rounded-full transition-all duration-700"
+                style={{ 
+                  width: `${agent.efficiencyScore}%`,
+                  background: `linear-gradient(90deg, ${colors.red}, ${colors.orange})`
+                }}
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2 mt-4">
+              <div className="text-center">
+                <div className="text-xs" style={{ color: colors.secondary }}>AHT</div>
+                <div className="font-semibold text-sm" style={{ color: colors.red }}>
+                  {formatTime(agent.avgHandleTime)}
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="text-xs" style={{ color: colors.secondary }}>Target</div>
+                <div className="font-semibold text-sm" style={{ color: colors.orange }}>
+                  {formatTime(agentMetrics.teamAvgHandleTime)}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 p-3 rounded-lg" style={{ backgroundColor: `${colors.red}15` }}>
+              <div className="text-xs font-medium mb-2" style={{ color: colors.red }}>
+                Focus Areas
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {improvementAreas.map(area => (
+                  <span 
+                    key={area}
+                    className="text-xs px-2 py-1 rounded-full"
+                    style={{ 
+                      background: `${colors.red}20`,
+                      color: colors.red,
+                      border: `1px solid ${colors.red}30`
+                    }}
+                  >
+                    {area}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 mt-4 text-xs" style={{ color: colors.orange }}>
+              <Target className="w-3 h-3" />
+              <span>Development Plan Available</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const FormulasPanel = () => (
     <div 
@@ -1004,9 +1132,9 @@ const AgentPerformanceDashboard = () => {
             {/* Workforce Overview KPIs */}
             <section className="flex flex-wrap justify-center gap-8 mb-20" style={{ perspective: '1000px' }}>
               <MetricCard
-                title="Active Agents"
+                title="Total Agents"
                 value={agentMetrics.workforceStats.totalAgents}
-                subtitle={`Handling interactions`}
+                subtitle={`In workforce`}
                 icon={Users}
               />
               <MetricCard
@@ -1058,6 +1186,55 @@ const AgentPerformanceDashboard = () => {
                     </div>
                   ))}
               </div>
+            </div>
+
+            {/* Flowing divider */}
+            <FlowingDivider />
+
+            {/* Bottom Performing Agents - Coaching Focus */}
+            <div className="mb-16">
+              <div className="mb-12 text-center">
+                <h2 className="text-2xl font-medium tracking-tight mb-3 flex items-center justify-center gap-3" style={{ color: colors.primary }}>
+                  <BookOpen className="w-6 h-6" style={{ color: colors.yellow }} />
+                  Development Opportunities
+                </h2>
+                <p className="text-base" style={{ color: colors.secondary }}>
+                  Agents with growth potential who would benefit from targeted coaching
+                </p>
+              </div>
+              
+              {/* Bottom performers with coaching focus */}
+              <div className="organic-grid" style={{ columnCount: 'auto', columnWidth: '320px', columnGap: '2rem' }}>
+                {agentMetrics.agents
+                  .filter(agent => agent.handledInteractions >= 10 && (agent.efficiencyScore < 85 || agent.productivityRate < 75))
+                  .sort((a, b) => a.efficiencyScore - b.efficiencyScore) // Sort worst to best for development focus
+                  .slice(0, 6)
+                  .map((agent, idx) => (
+                    <div key={agent.name} style={{ breakInside: 'avoid', marginBottom: '2rem' }}>
+                      <CoachingFocusCard agent={agent} rank={idx + 1} />
+                    </div>
+                  ))}
+              </div>
+              
+              {agentMetrics.agents.filter(a => a.handledInteractions >= 10 && (a.efficiencyScore < 85 || parseFloat(a.productivityRate) < 75)).length === 0 && (
+                <div className="text-center py-16">
+                  <div 
+                    className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center backdrop-blur-sm transition-transform duration-300 hover:scale-110" 
+                    style={{ 
+                      background: colors.card,
+                      border: `1px solid ${colors.border}`
+                    }}
+                  >
+                    <CheckCircle className="w-10 h-10" style={{ color: colors.green }} />
+                  </div>
+                  <h3 className="text-xl font-medium mb-2" style={{ color: colors.primary }}>
+                    Excellent Team Performance! 
+                  </h3>
+                  <p className="text-base" style={{ color: colors.secondary }}>
+                    All agents are meeting performance standards
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Detailed Agent Performance Table */}
@@ -1183,67 +1360,49 @@ const AgentPerformanceDashboard = () => {
               )}
             </div>
 
-            {/* Coaching Opportunities Section */}
-            <div className="mt-6">
-              <div 
-                className="rounded-2xl p-6"
-                style={{ 
-                  background: `linear-gradient(180deg, ${colors.card}, ${colors.cardHover})`,
-                  border: `1px solid ${colors.border}`,
-                  boxShadow: '0 10px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.02)'
-                }}
-              >
-                <h2 className="text-xl font-bold mb-4 flex items-center gap-2" style={{ color: colors.primary }}>
-                  <BookOpen className="w-5 h-5" style={{ color: colors.red }} />
-                  Coaching Opportunities
-                </h2>
-                <p className="text-sm mb-4" style={{ color: colors.secondary }}>
-                  Agents with efficiency below 85% or high handle times may benefit from additional training
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {agentMetrics.agents
-                    .filter(agent => agent.efficiencyScore < 85 && agent.handledInteractions >= 10)
-                    .slice(0, 4)
-                    .map((agent) => (
-                      <div 
-                        key={agent.name}
-                        className="p-4 rounded-xl"
-                        style={{ 
-                          backgroundColor: `${colors.red}10`,
-                          border: `1px solid ${colors.red}40`
-                        }}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <div className="font-semibold" style={{ color: colors.primary }}>
-                              {agent.name}
-                            </div>
-                            <div className="text-xs mt-1" style={{ color: colors.secondary }}>
-                              AHT: {formatTime(agent.avgHandleTime)} (Team avg: {formatTime(agentMetrics.teamAvgHandleTime)})
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-xs" style={{ color: colors.secondary }}>Needs Improvement</div>
-                            <div className="text-lg font-bold" style={{ color: colors.red }}>
-                              {agent.efficiencyScore}%
-                            </div>
-                          </div>
-                        </div>
-                        <div className="mt-2 text-xs" style={{ color: colors.red }}>
-                          📊 Focus areas: Handle time reduction, process optimization
-                        </div>
-                      </div>
-                    ))}
-                </div>
-                
-                {agentMetrics.agents.filter(a => a.efficiencyScore < 85 && a.handledInteractions >= 10).length === 0 && (
-                  <div className="text-center py-8" style={{ color: colors.green }}>
-                    <CheckCircle className="w-12 h-12 mx-auto mb-2" />
-                    <p>All agents are performing above coaching threshold!</p>
-                  </div>
-                )}
+            {/* Bottom Performing Agents - Coaching Focus */}
+            <div className="mt-16">
+              <div className="mb-8">
+                <FlowingDivider />
               </div>
+              
+              <div className="text-center mb-8">
+                <h2 className="text-2xl font-bold mb-2" style={{ color: colors.red }}>
+                  Development Opportunities
+                </h2>
+                <p style={{ color: colors.secondary }}>
+                  Agents who could benefit from targeted coaching and skill development
+                </p>
+              </div>
+              
+              <div className="organic-grid">
+                {agentMetrics.agents
+                  .filter(agent => (agent.efficiencyScore < 85 || agent.productivityRate < 75) && agent.handledInteractions >= 10)
+                  .slice(0, 6)
+                  .map((agent, idx) => (
+                    <CoachingFocusCard key={agent.name} agent={agent} rank={idx + 1} />
+                  ))}
+              </div>
+              
+              {agentMetrics.agents.filter(a => (a.efficiencyScore < 85 || a.productivityRate < 75) && a.handledInteractions >= 10).length === 0 && (
+                <div className="text-center py-16">
+                  <div 
+                    className="inline-block p-8 rounded-full mb-4"
+                    style={{ 
+                      background: `linear-gradient(135deg, ${colors.green}20, ${colors.primary}20)`,
+                      border: `2px solid ${colors.green}40`
+                    }}
+                  >
+                    <CheckCircle className="w-12 h-12" style={{ color: colors.green }} />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2" style={{ color: colors.green }}>
+                    Exceptional Team Performance!
+                  </h3>
+                  <p style={{ color: colors.secondary }}>
+                    All agents are exceeding performance thresholds
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Footer Stats */}
