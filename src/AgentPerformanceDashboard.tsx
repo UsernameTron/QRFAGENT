@@ -6,6 +6,26 @@ interface DataRow {
   [key: string]: any;
 }
 
+interface AgentData {
+  name: any;
+  totalInteractions: any;
+  handledInteractions: any;
+  abandonedWhileAssigned: any;
+  avgHandleTime: number;
+  totalHandleTime: number;
+  productivityRate: string;
+  efficiencyScore: number;
+  versatilityScore: string;
+  interactionsPerHour: string;
+  utilizationRate: string;
+  uniqueQueues: number;
+  uniqueMediaTypes: number;
+  daysWorked: number;
+  queues: any[];
+  mediaTypes: any[];
+  performanceTier: string;
+}
+
 const AgentPerformanceDashboard = () => {
   const [data, setData] = useState<DataRow[] | null>(null);
   const [selectedQueue, setSelectedQueue] = useState('all');
@@ -42,6 +62,7 @@ const AgentPerformanceDashboard = () => {
     red: '#ef4444',
     redGlow: 'rgba(239, 68, 68, 0.2)',
     yellow: '#f59e0b',
+    orange: '#f97316',
     purple: '#8b5cf6',
     purpleGlow: 'rgba(139, 92, 246, 0.2)',
     
@@ -346,7 +367,7 @@ const AgentPerformanceDashboard = () => {
     formula?: string | null;
   }
 
-  const MetricCard = ({ title, value, subtitle, icon: Icon, trend, formula }: MetricCardProps) => {
+  const MetricCard = ({ title, value, subtitle, icon: Icon, trend }: MetricCardProps) => {
     // Generate organic variations for each card
     const cardVariations = [
       { rotation: '1deg', borderRadius: '24px 12px 18px 20px', animationDelay: '0s' },
@@ -503,8 +524,8 @@ const AgentPerformanceDashboard = () => {
   const CoachingFocusCard = ({ agent, rank }: CoachingFocusCardProps) => {
     const improvementAreas = [];
     if (agent.efficiencyScore < 85) improvementAreas.push('Handle Time');
-    if (agent.productivityRate < 75) improvementAreas.push('Productivity');
-    if (agent.utilizationRate < 70) improvementAreas.push('Utilization');
+    if (parseFloat(agent.productivityRate) < 75) improvementAreas.push('Productivity');
+    if (parseFloat(agent.utilizationRate) < 70) improvementAreas.push('Utilization');
     
     const gapFromTarget = 100 - agent.efficiencyScore;
     
@@ -512,8 +533,8 @@ const AgentPerformanceDashboard = () => {
       <div 
         className="organic-card organic-agent-card group cursor-pointer transition-all duration-300 hover:scale-105"
         style={{
-          '--base-rotation': `${(rank % 2 === 0 ? 1 : -1) * (0.5 + rank * 0.3)}deg`
-        }}
+          transform: `rotate(${(rank % 2 === 0 ? 1 : -1) * (0.5 + rank * 0.3)}deg)`
+        } as React.CSSProperties}
       >
         <div 
           className="p-6 h-full glass-morphism relative overflow-hidden"
@@ -1206,7 +1227,7 @@ const AgentPerformanceDashboard = () => {
               {/* Bottom performers with coaching focus */}
               <div className="organic-grid" style={{ columnCount: 'auto', columnWidth: '320px', columnGap: '2rem' }}>
                 {agentMetrics.agents
-                  .filter(agent => agent.handledInteractions >= 10 && (agent.efficiencyScore < 85 || agent.productivityRate < 75))
+                  .filter(agent => agent.handledInteractions >= 10 && (agent.efficiencyScore < 85 || parseFloat(agent.productivityRate) < 75))
                   .sort((a, b) => a.efficiencyScore - b.efficiencyScore) // Sort worst to best for development focus
                   .slice(0, 6)
                   .map((agent, idx) => (
@@ -1377,14 +1398,14 @@ const AgentPerformanceDashboard = () => {
               
               <div className="organic-grid">
                 {agentMetrics.agents
-                  .filter(agent => (agent.efficiencyScore < 85 || agent.productivityRate < 75) && agent.handledInteractions >= 10)
+                  .filter(agent => (agent.efficiencyScore < 85 || parseFloat(agent.productivityRate) < 75) && agent.handledInteractions >= 10)
                   .slice(0, 6)
                   .map((agent, idx) => (
                     <CoachingFocusCard key={agent.name} agent={agent} rank={idx + 1} />
                   ))}
               </div>
               
-              {agentMetrics.agents.filter(a => (a.efficiencyScore < 85 || a.productivityRate < 75) && a.handledInteractions >= 10).length === 0 && (
+              {agentMetrics.agents.filter(a => (a.efficiencyScore < 85 || parseFloat(a.productivityRate) < 75) && a.handledInteractions >= 10).length === 0 && (
                 <div className="text-center py-16">
                   <div 
                     className="inline-block p-8 rounded-full mb-4"
