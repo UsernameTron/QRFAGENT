@@ -154,15 +154,19 @@ select {
 
 /* Flex organic layout */
 .organic-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-.organic-grid > * {
-  flex: 1 1 280px;
-  max-width: 320px;
+@media (max-width: 768px) {
+  .organic-grid {
+    grid-template-columns: 1fr;
+    padding: 0 1rem;
+    gap: 1rem;
+  }
 }
 
 /* Enhanced organic agent cards */
@@ -328,9 +332,65 @@ select {
   animation-delay: 6s; 
   animation-duration: 20s;
 }
-.particle:nth-child(5) { 
-  top: 40%; 
-  left: 10%; 
-  animation-delay: 8s; 
+.particle:nth-child(5) {
+  top: 40%;
+  left: 10%;
+  animation-delay: 8s;
   animation-duration: 14s;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  /* Reduce animations on mobile for performance */
+  .particle {
+    display: none;
+  }
+
+  /* Better touch targets */
+  button, select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improved text readability on mobile */
+  .text-xs {
+    font-size: 0.75rem !important;
+  }
+
+  /* Ensure proper spacing on mobile */
+  .p-6 {
+    padding: 1rem !important;
+  }
+
+  /* Stack elements vertically on mobile */
+  .grid-cols-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  .grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Responsive table improvements */
+.table-container {
+  min-width: 800px;
+}
+
+@media (max-width: 1024px) {
+  .table-container {
+    min-width: 600px;
+  }
+}
+
+/* Enhanced scrollbar for touch devices */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
 }

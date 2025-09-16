@@ -624,7 +624,7 @@ const AgentPerformanceDashboard = () => {
   );
 
   // Progress Ring Component
-  const ProgressRing = ({ percentage, size = 40, color }: { percentage: number, size?: number, color?: string }) => {
+  const ProgressRing = ({ percentage, size = 48, color }: { percentage: number, size?: number, color?: string }) => {
     const circumference = (size - 4) * Math.PI;
     const offset = circumference - (percentage / 100) * circumference;
 
@@ -668,7 +668,7 @@ const AgentPerformanceDashboard = () => {
     const maxCount = Math.max(...distribution.map(d => d.count));
 
     return (
-      <div className="relative h-32 flex items-end gap-1">
+      <div className="relative min-h-[160px] h-40 flex items-end gap-1 pb-4">
         {distribution.map((d, i) => (
           <div
             key={i}
@@ -679,9 +679,9 @@ const AgentPerformanceDashboard = () => {
               borderRadius: '4px 4px 0 0'
             }}
           >
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2
                             opacity-0 group-hover:opacity-100 transition-opacity
-                            bg-black px-2 py-1 rounded text-xs whitespace-nowrap">
+                            bg-black px-2 py-1 rounded text-xs whitespace-nowrap z-10">
               {d.count} agents ({d.range})
             </div>
           </div>
@@ -700,20 +700,20 @@ const AgentPerformanceDashboard = () => {
     ];
 
     return (
-      <div className="relative h-24">
-        <svg width="100%" height="100%" viewBox="0 0 200 80">
+      <div className="relative h-28 p-2">
+        <svg width="calc(100% - 1rem)" height="calc(100% - 1rem)" viewBox="0 0 240 100" preserveAspectRatio="xMidYMid meet">
           {metrics.map((metric, idx) => {
-            const x = idx * 50;
-            const currentHeight = (metric.current / 100) * 60;
-            const targetHeight = (metric.target / 100) * 60;
+            const x = idx * 60;
+            const currentHeight = (metric.current / 100) * 70;
+            const targetHeight = (metric.target / 100) * 70;
 
             return (
               <g key={metric.name}>
                 {/* Target line */}
                 <rect
                   x={x + 10}
-                  y={70 - targetHeight}
-                  width="30"
+                  y={80 - targetHeight}
+                  width="40"
                   height="2"
                   fill={colors.green}
                   opacity="0.3"
@@ -721,8 +721,8 @@ const AgentPerformanceDashboard = () => {
                 {/* Current bar */}
                 <rect
                   x={x + 15}
-                  y={70 - currentHeight}
-                  width="20"
+                  y={80 - currentHeight}
+                  width="30"
                   height={currentHeight}
                   fill={metric.current >= metric.target ? colors.green : colors.red}
                   opacity="0.8"
@@ -730,21 +730,21 @@ const AgentPerformanceDashboard = () => {
                 />
                 {/* Label */}
                 <text
-                  x={x + 25}
-                  y="78"
+                  x={x + 30}
+                  y="95"
                   textAnchor="middle"
                   fill={colors.secondary}
-                  fontSize="8"
+                  fontSize="10"
                 >
                   {metric.name}
                 </text>
                 {/* Value */}
                 <text
-                  x={x + 25}
-                  y={65 - currentHeight}
+                  x={x + 30}
+                  y={75 - currentHeight}
                   textAnchor="middle"
                   fill={colors.primary}
-                  fontSize="10"
+                  fontSize="12"
                   fontWeight="bold"
                 >
                   {Math.round(metric.current)}
@@ -857,7 +857,7 @@ const AgentPerformanceDashboard = () => {
           </div>
 
           {/* Top Performers Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-full overflow-hidden">
             {topAgents.map((agent, idx) => (
               <TopPerformerCard key={agent.name} agent={agent} rank={idx + 1} />
             ))}
@@ -897,7 +897,7 @@ const AgentPerformanceDashboard = () => {
               <Star className="w-6 h-6" style={{ color: colors.gold }} />
             </div>
             <div>
-              <div className="font-semibold" style={{ color: colors.primary }}>
+              <div className="font-semibold truncate max-w-[200px]" title={agent.name} style={{ color: colors.primary }}>
                 {agent.name}
               </div>
               <div className="text-xs" style={{ color: colors.gold }}>
@@ -1049,7 +1049,7 @@ const AgentPerformanceDashboard = () => {
           </div>
 
           {/* Bottom Performers Grid with Different Card Style */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-full overflow-hidden px-4 md:px-0">
             {bottomAgents.map((agent, idx) => (
               <DevelopmentFocusCard
                 key={agent.name}
@@ -1119,7 +1119,7 @@ const AgentPerformanceDashboard = () => {
                 <AlertTriangle className="w-5 h-5" style={{ color: colors.red }} />
               </div>
               <div>
-                <div className="font-semibold" style={{ color: colors.primary }}>
+                <div className="font-semibold truncate max-w-[180px]" title={agent.name} style={{ color: colors.primary }}>
                   {agent.name}
                 </div>
                 <div className="text-xs" style={{ color: colors.red }}>
@@ -1213,12 +1213,12 @@ const AgentPerformanceDashboard = () => {
           <h4 className="text-sm font-semibold mb-3" style={{ color: colors.primary }}>
             4-Week Development Timeline
           </h4>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-2">
             {[1, 2, 3, 4].map(week => (
               <button
                 key={week}
                 onClick={() => setActiveWeek(week)}
-                className="flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all"
+                className="flex-shrink-0 min-w-[80px] py-2 px-3 rounded-lg text-xs font-medium transition-all"
                 style={{
                   background: activeWeek === week ? colors.blue : 'rgba(255,255,255,0.05)',
                   color: activeWeek === week ? '#fff' : colors.secondary,
@@ -1472,16 +1472,16 @@ const AgentPerformanceDashboard = () => {
           Projected Performance Improvement
         </h4>
 
-        <div className="relative h-48">
-          <svg width="100%" height="100%" viewBox="0 0 400 180">
+        <div className="relative h-52 p-4">
+          <svg width="calc(100% - 2rem)" height="calc(100% - 2rem)" viewBox="0 0 480 200" preserveAspectRatio="xMidYMid meet">
             {/* Grid lines */}
             {[0, 25, 50, 75, 100].map(y => (
               <line
                 key={y}
-                x1="40"
-                y1={160 - (y * 1.4)}
-                x2="380"
-                y2={160 - (y * 1.4)}
+                x1="50"
+                y1={170 - (y * 1.5)}
+                x2="430"
+                y2={170 - (y * 1.5)}
                 stroke={colors.border}
                 strokeDasharray="2,2"
                 opacity="0.3"
@@ -1491,7 +1491,7 @@ const AgentPerformanceDashboard = () => {
             {/* Improvement curve */}
             <path
               d={`M ${projections.map((p, i) =>
-                `${40 + (i * 45)},${160 - (p.value * 1.4)}`
+                `${50 + (i * 50)},${170 - (p.value * 1.5)}`
               ).join(' L ')}`}
               stroke={color}
               strokeWidth="3"
@@ -1503,28 +1503,28 @@ const AgentPerformanceDashboard = () => {
             {projections.map((point, idx) => (
               <g key={idx}>
                 <circle
-                  cx={40 + (idx * 45)}
-                  cy={160 - (point.value * 1.4)}
-                  r="5"
+                  cx={50 + (idx * 50)}
+                  cy={170 - (point.value * 1.5)}
+                  r="6"
                   fill={color}
                   stroke={colors.bg}
                   strokeWidth="2"
                 />
                 <text
-                  x={40 + (idx * 45)}
-                  y={175}
+                  x={50 + (idx * 50)}
+                  y={190}
                   textAnchor="middle"
                   fill={colors.secondary}
-                  fontSize="10"
+                  fontSize="11"
                 >
                   {point.week}w
                 </text>
                 <text
-                  x={40 + (idx * 45)}
-                  y={150 - (point.value * 1.4)}
+                  x={50 + (idx * 50)}
+                  y={160 - (point.value * 1.5)}
                   textAnchor="middle"
                   fill={colors.primary}
-                  fontSize="12"
+                  fontSize="13"
                   fontWeight="bold"
                 >
                   {point.value}%
@@ -1534,19 +1534,19 @@ const AgentPerformanceDashboard = () => {
 
             {/* Target line */}
             <line
-              x1="40"
-              y1={160 - (85 * 1.4)}
-              x2="380"
-              y2={160 - (85 * 1.4)}
+              x1="50"
+              y1={170 - (85 * 1.5)}
+              x2="430"
+              y2={170 - (85 * 1.5)}
               stroke={colors.green}
               strokeWidth="2"
               strokeDasharray="5,3"
             />
             <text
-              x="385"
-              y={160 - (85 * 1.4) + 4}
+              x="440"
+              y={170 - (85 * 1.5) + 5}
               fill={colors.green}
-              fontSize="10"
+              fontSize="11"
             >
               Target
             </text>
@@ -1586,7 +1586,7 @@ const AgentPerformanceDashboard = () => {
           Performance Gap Analysis
         </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Side by Side Comparison */}
           <div className="p-6 rounded-2xl"
                style={{
@@ -1914,7 +1914,9 @@ const AgentPerformanceDashboard = () => {
               {/* Agent name and info */}
               <div>
                 <div className="font-semibold flex items-center gap-2 text-base" style={{ color: colors.primary }}>
-                  {agent.name.length > 18 ? agent.name.substring(0, 18) + '...' : agent.name}
+                  <span className="truncate max-w-[160px]" title={agent.name}>
+                    {agent.name}
+                  </span>
                   {getTierIcon(agent.performanceTier)}
                 </div>
                 <div className="text-xs mt-1" style={{ color: colors.tertiary }}>
@@ -2077,12 +2079,10 @@ const AgentPerformanceDashboard = () => {
     >
       {/* Organic background shapes with particle system */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {/* Floating particles */}
-        <div className="particle" />
-        <div className="particle" />
-        <div className="particle" />
-        <div className="particle" />
-        <div className="particle" />
+        {/* Floating particles - responsive count */}
+        {Array.from({ length: typeof window !== 'undefined' && window.innerWidth < 768 ? 3 : 5 }).map((_, i) => (
+          <div key={i} className="particle" />
+        ))}
         
         {/* Dynamic organic shapes */}
         <div 
@@ -2386,8 +2386,9 @@ const AgentPerformanceDashboard = () => {
                 </p>
               </div>
               
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <div className="overflow-x-auto max-w-full">
+                <div className="table-container">
+                  <table className="w-full">
                   <thead>
                     <tr style={{ borderBottom: `1px solid ${colors.border}` }}>
                       <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: colors.secondary }}>
@@ -2477,7 +2478,8 @@ const AgentPerformanceDashboard = () => {
                         </tr>
                       ))}
                   </tbody>
-                </table>
+                  </table>
+                </div>
               </div>
               
             </div>
