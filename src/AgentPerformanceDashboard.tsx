@@ -1319,7 +1319,6 @@ const AgentPerformanceDashboard = () => {
                   </thead>
                   <tbody>
                     {agentMetrics.agents
-                      .slice(0, 20)
                       .map((agent, idx) => (
                         <tr 
                           key={idx} 
@@ -1372,13 +1371,6 @@ const AgentPerformanceDashboard = () => {
                 </table>
               </div>
               
-              {agentMetrics.agents.length > 20 && (
-                <div className="px-6 py-3 text-center" style={{ borderTop: `1px solid ${colors.border}` }}>
-                  <p className="text-sm" style={{ color: colors.secondary }}>
-                    Showing top 20 agents of {agentMetrics.agents.length} total agents
-                  </p>
-                </div>
-              )}
             </div>
 
             {/* Bottom Performing Agents - Coaching Focus */}
