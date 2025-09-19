@@ -36,25 +36,32 @@ const AgentPerformanceDashboard = () => {
   const [showFormulas, setShowFormulas] = useState(false);
   const [sortBy, setSortBy] = useState('interactions'); // interactions, handleTime, efficiency
 
-  // Advanced organic design system with dynamic backgrounds
+  // Modern dark theme with glass-morphism effects
   const colors = {
-    // Backgrounds - Dynamic and organic
-    bg: '#000000',
-    bgPattern: `
-      radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 60%),
-      radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.08) 0%, transparent 40%),
-      linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%)
-    `,
-    card: 'rgba(255, 255, 255, 0.04)',
-    cardHover: 'rgba(255, 255, 255, 0.08)',
-    
-    // Text - High contrast with subtle gradients
-    primary: '#ffffff',
-    secondary: '#a3a3a3',
+    // Text colors from original
+    primary: '#F1F5F9',
+    secondary: '#94A3B8',
     tertiary: '#6b7280',
-    
-    // Refined accent palette with organic variations
+
+    // Modern theme colors
+    primaryColor: '#4F46E5',
+    primaryDark: '#4338CA',
+    secondaryColor: '#10B981',
+    danger: '#EF4444',
+    warning: '#F59E0B',
+
+    // Backgrounds - Modern dark theme with organic gradients
+    bg: '#0F172A',
+    bgSecondary: '#1E293B',
+    bgCard: 'rgba(45, 55, 72, 0.8)',
+    bgPattern: `linear-gradient(135deg, #0F172A 0%, #1a1f3a 100%)`,
+
+    // Text - High contrast with modern hierarchy
+    textPrimary: '#F1F5F9',
+    textSecondary: '#94A3B8',
+    textTertiary: '#6b7280',
+
+    // Standard color palette
     blue: '#3b82f6',
     blueGlow: 'rgba(59, 130, 246, 0.2)',
     green: '#10b981',
@@ -65,16 +72,23 @@ const AgentPerformanceDashboard = () => {
     orange: '#f97316',
     purple: '#8b5cf6',
     purpleGlow: 'rgba(139, 92, 246, 0.2)',
-    
-    // UI elements with organic feel
-    border: 'rgba(255, 255, 255, 0.1)',
-    borderActive: 'rgba(255, 255, 255, 0.2)',
-    
+
+    // UI elements with glass-morphism
+    border: '#475569',
+    borderActive: 'rgba(79, 70, 229, 0.5)',
+    card: 'rgba(45, 55, 72, 0.8)',
+    cardHover: 'rgba(255, 255, 255, 0.08)',
+
     // Interactive states
     hover: 'rgba(255, 255, 255, 0.06)',
     active: 'rgba(255, 255, 255, 0.12)',
-    
-    // Performance tiers with glow effects
+
+    // Glow effects for modern feel
+    successGlow: '0 0 30px rgba(16, 185, 129, 0.3)',
+    dangerGlow: '0 0 30px rgba(239, 68, 68, 0.3)',
+    primaryGlow: '0 4px 15px rgba(79, 70, 229, 0.3)',
+
+    // Performance tiers with modern colors
     gold: '#fbbf24',
     goldGlow: 'rgba(251, 191, 36, 0.3)',
     silver: '#d1d5db',
@@ -2069,14 +2083,53 @@ const AgentPerformanceDashboard = () => {
   }
 
   return (
-    <div 
-      className="min-h-screen relative overflow-hidden" 
-      style={{ 
-        background: `${colors.bg}, ${colors.bgPattern}`,
-        color: colors.primary,
-        fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
-      }}
-    >
+    <>
+      <style>{`
+        @keyframes slideDown {
+          from {
+            transform: translateY(-20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeInScale {
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes pulse-green {
+          0%, 100% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+          }
+          50% {
+            box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+          }
+        }
+      `}</style>
+
+      <div
+        className="min-h-screen relative overflow-hidden"
+        style={{
+          background: `${colors.bg}, ${colors.bgPattern}`,
+          color: colors.primary,
+          fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+        }}
+      >
       {/* Organic background shapes with particle system */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {/* Floating particles - responsive count */}
@@ -2129,22 +2182,43 @@ const AgentPerformanceDashboard = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
-        {/* Header with fluid typography */}
-        <header className="mb-20">
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <h1 
-                className="fluid-text-3xl font-medium tracking-tight mb-3 bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent"
-                style={{ 
-                  backgroundSize: '200% 200%',
-                  animation: 'backgroundShift 6s ease-in-out infinite'
-                }}
-              >
-                Agent Performance
-              </h1>
-              <p className="fluid-text-xl" style={{ color: colors.secondary }}>
-                Organic workforce analytics and insights
-              </p>
+        {/* Modern Header with Glass-morphism */}
+        <header
+          className="mb-20 p-6 rounded-2xl backdrop-blur-lg border"
+          style={{
+            background: colors.bgCard,
+            borderColor: colors.border,
+            animation: 'slideDown 0.5s ease-out'
+          }}
+        >
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-6">
+              {/* Logo with QRF icon */}
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-xl text-white"
+                  style={{
+                    background: `linear-gradient(135deg, ${colors.primaryColor}, ${colors.primaryDark})`,
+                    boxShadow: colors.primaryGlow
+                  }}
+                >
+                  QRF
+                </div>
+                <div>
+                  <h1
+                    className="text-2xl font-semibold tracking-tight bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent"
+                    style={{
+                      backgroundSize: '200% 200%',
+                      animation: 'backgroundShift 6s ease-in-out infinite'
+                    }}
+                  >
+                    Agent Performance Dashboard
+                  </h1>
+                  <p className="text-sm mt-1" style={{ color: colors.secondary }}>
+                    Comprehensive workforce analytics and insights
+                  </p>
+                </div>
+              </div>
             </div>
             {data && (
               <div className="flex gap-3">
@@ -2541,6 +2615,7 @@ const AgentPerformanceDashboard = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

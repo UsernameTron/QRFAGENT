@@ -4,49 +4,66 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a React-based agent performance dashboard for call center workforce analytics. The project consists of a single component that provides comprehensive agent performance tracking and visualization.
+QRF Agent Performance Dashboard - a React-based single-page application for call center workforce analytics. The dashboard provides comprehensive agent performance tracking, metrics visualization, and coaching insights.
+
+## Commands
+
+```bash
+# Development
+npm install          # Install dependencies
+npm run dev          # Start Vite dev server (http://localhost:5173)
+npm run build        # Build for production
+npm run preview      # Preview production build
+
+# Code Quality
+npm run lint         # Run ESLint on .ts/.tsx files
+npx tsc --noEmit    # Type-check without emitting files
+```
 
 ## Architecture
 
-- **Single Component Structure**: The main functionality is contained in `agent-performance-dashboard.tsx`
-- **React + TypeScript**: Uses modern React hooks (useState, useMemo, useEffect)
-- **CSV Data Processing**: Uses Papa Parse library for handling uploaded CSV files
-- **Self-contained Dashboard**: No external API dependencies, processes uploaded data client-side
+### Tech Stack
+- **Build Tool**: Vite 4.4.5 with React plugin
+- **Framework**: React 18.2 with TypeScript 5.0
+- **UI Components**: Custom React components with inline CSS-in-JS styling
+- **Icons**: Lucide React for iconography
+- **Data Processing**: Papa Parse for CSV handling
 
-## Key Dependencies
+### Project Structure
+- `/src/AgentPerformanceDashboard.tsx` - Main dashboard component (106KB, ~2700 lines)
+- `/src/main.tsx` - React app entry point
+- `/src/index.css` - Global styles
+- Single-component architecture with all business logic self-contained
 
-- React (hooks-based)
-- Lucide React (icons)
-- Papa Parse (CSV parsing)
+## Key Business Logic
 
-## Data Structure
+### Performance Metrics Algorithm
+The dashboard calculates complex performance scores:
+- **Efficiency Score**: `(teamAvgHandleTime / agentAvgHandleTime) * 100`
+- **Utilization Rate**: Based on total handle time vs available work hours
+- **Productivity Rate**: `(handledInteractions / totalInteractions) * 100`
+- **Versatility Score**: Coverage across different queues and media types
 
-The dashboard expects CSV files with these key columns:
-- `Queue`: Call queue identifier
-- `Media Type`: Type of interaction (voice, chat, etc.)
-- `Abandoned`: YES/NO flag
-- `Total Handle`: Handle time in seconds
-- `Total Queue`: Queue time in seconds  
-- `Users - Interacted`: Agent identifier
-- `Date`: Interaction date
+### Performance Tier Classification
+Agents are automatically classified into tiers based on:
+- Gold: Top 20% performers
+- Silver: Next 30%
+- Bronze: Remaining 50%
 
-## Key Features
+## Data Requirements
 
-- **Performance Metrics Calculation**: Efficiency scores, utilization rates, productivity metrics
-- **Filtering**: By queue, media type, and individual agent
-- **Sorting**: Multiple sort options for agent performance
-- **Performance Tiers**: Gold/Silver/Bronze classification system
-- **Coaching Insights**: Identifies agents needing additional support
+CSV uploads must contain these columns:
+- `Queue` - Call queue identifier
+- `Media Type` - Interaction type (voice, chat, email)
+- `Abandoned` - YES/NO abandonment flag
+- `Total Handle` - Handle time in seconds
+- `Total Queue` - Queue time in seconds
+- `Users - Interacted` - Agent identifier
+- `Date` - Interaction timestamp
 
-## Performance Calculations
+## Deployment
 
-The component includes complex business logic for:
-- Agent efficiency scoring (comparison to team average)
-- Utilization rate calculations
-- Productivity rate metrics
-- Versatility scoring based on queue coverage
-- Performance tier classification
-
-## Development Notes
-
-This appears to be a standalone component that could be integrated into a larger React application. The component is fully self-contained with no external state management or routing dependencies.
+The project includes a `netlify.toml` configuration for Netlify deployment:
+- Build command: `npm run build`
+- Publish directory: `dist`
+- Automatic SPA redirects configured
