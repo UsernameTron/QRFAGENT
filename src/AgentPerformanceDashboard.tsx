@@ -13,8 +13,6 @@ interface AgentData {
   abandonedWhileAssigned: number;
   avgHandleTime: number;
   totalHandleTime: number;
-  productivityRate: number;
-  efficiencyScore: number;
 }
 
 const AgentPerformanceDashboard = () => {
@@ -121,17 +119,7 @@ const AgentPerformanceDashboard = () => {
         ? agent.totalHandleTime / agent.handledInteractions 
         : 0;
       
-      const efficiencyScore = teamAvgHandleTime > 0 && avgHandleTime > 0
-        ? Math.round(100 - ((avgHandleTime - teamAvgHandleTime) / teamAvgHandleTime * 100))
-        : 100;
-
-      const productivityRate = agent.totalInteractions > 0
-        ? Math.round((agent.handledInteractions / agent.totalInteractions * 100))
-        : 0;
-
       // Ensure no NaN values
-      const safeEfficiencyScore = isNaN(efficiencyScore) ? 100 : efficiencyScore;
-      const safeProductivityRate = isNaN(productivityRate) ? 0 : productivityRate;
       const safeAvgHandleTime = isNaN(avgHandleTime) ? 0 : avgHandleTime;
       
       return {
@@ -140,9 +128,7 @@ const AgentPerformanceDashboard = () => {
         handledInteractions: agent.handledInteractions,
         abandonedWhileAssigned: agent.abandonedWhileAssigned,
         avgHandleTime: Math.round(safeAvgHandleTime),
-        totalHandleTime: Math.round(agent.totalHandleTime || 0),
-        productivityRate: safeProductivityRate,
-        efficiencyScore: safeEfficiencyScore
+        totalHandleTime: Math.round(agent.totalHandleTime || 0)
       };
     }).sort((a, b) => b.totalInteractions - a.totalInteractions);
 
@@ -361,8 +347,6 @@ const AgentPerformanceDashboard = () => {
                     <th style={styles.th}>Handled</th>
                     <th style={styles.th}>Abandoned</th>
                     <th style={styles.th}>Avg Handle Time</th>
-                    <th style={styles.th}>Productivity Rate</th>
-                    <th style={styles.th}>Efficiency Score</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -373,22 +357,6 @@ const AgentPerformanceDashboard = () => {
                       <td style={styles.td}>{agent.handledInteractions}</td>
                       <td style={styles.td}>{agent.abandonedWhileAssigned}</td>
                       <td style={styles.td}>{formatTime(agent.avgHandleTime)}</td>
-                      <td style={styles.td}>
-                        <span style={{
-                          color: agent.productivityRate >= 80 ? '#10b981' : 
-                                agent.productivityRate >= 60 ? '#f59e0b' : '#ef4444'
-                        }}>
-                          {agent.productivityRate}%
-                        </span>
-                      </td>
-                      <td style={styles.td}>
-                        <span style={{
-                          color: agent.efficiencyScore >= 100 ? '#10b981' : 
-                                agent.efficiencyScore >= 80 ? '#f59e0b' : '#ef4444'
-                        }}>
-                          {agent.efficiencyScore}%
-                        </span>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
