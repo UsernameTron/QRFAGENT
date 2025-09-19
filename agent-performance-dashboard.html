@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Performance Metrics Dashboard - Advanced Analytics</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --emerald: #10b981;
+            --cyan: #22d3ee;
+            --orange: #f97316;
+            --purple: #a855f7;
+            --bg-main: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: rgba(30, 41, 59, 0.9);
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #334155;
+            --border-light: rgba(51, 65, 85, 0.5);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-main) 0%, #1a1f3a 50%, var(--bg-main) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Enhanced Header */
+        .header {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.6s ease;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .title-section h1 {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--bg-hover), var(--bg-secondary));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn.refresh:hover {
+            background: linear-gradient(135deg, var(--success), var(--emerald));
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn.export:hover {
+            background: linear-gradient(135deg, var(--orange), var(--warning));
+            box-shadow: 0 8px 25px rgba(249, 115, 22, 0.3);
+        }
+
+        /* Advanced Filters */
+        .filters-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            animation: fadeInScale 0.6s ease forwards;
+            opacity: 0;
+            animation-delay: 0.1s;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 48px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .results-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Enhanced Metrics Grid */
+        .metrics-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            animation: fadeInScale 0.8s ease forwards;
+            opacity: 0;
+        }
+
+        .metric-card:nth-child(1) { animation-delay: 0.1s; }
+        .metric-card:nth-child(2) { animation-delay: 0.2s; }
+        .metric-card:nth-child(3) { animation-delay: 0.3s; }
+        .metric-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.2);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        .metric-icon {
+            font-size: 24px;
+            opacity: 0.7;
+        }
+
+        .metric-value {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .metric-trend {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+        .trend-stable { color: var(--text-secondary); }
+
+        /* Secondary Metrics */
+        .secondary-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            animation: fadeIn 1s ease;
+            animation-delay: 0.5s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        /* Performance Analysis Grid */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            animation: fadeIn 1.2s ease;
+            animation-delay: 0.7s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            transition: all 0.3s ease;
+        }
+
+        .chart-container:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.1);
+        }
+
+        .chart-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Enhanced Performance Table */
+        .performance-table-container {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            animation: fadeIn 1.4s ease;
+            animation-delay: 0.9s;
+            opacity: 0;
+            animation-fill-mode: forwards;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .table-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        th {
+            background: var(--bg-main);
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        th:hover {
+            color: var(--text-primary);
+            background: var(--bg-hover);
+        }
+
+        td {
+            padding: 20px 12px;
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+            transform: scale(1.005);
+        }
+
+        .agent-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .agent-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .agent-details .agent-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .agent-details .agent-meta {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .department-info .dept-name {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .department-info .shift-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: capitalize;
+        }
+
+        /* Enhanced Performance Bars */
+        .performance-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .performance-bar {
+            flex: 1;
+            height: 12px;
+            background: var(--bg-main);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .performance-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .performance-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: shimmer 2.5s infinite;
+        }
+
+        .performance-outstanding .performance-fill {
+            background: linear-gradient(90deg, var(--emerald), #22d3ee);
+        }
+
+        .performance-excellent .performance-fill {
+            background: linear-gradient(90deg, var(--success), #22d3ee);
+        }
+
+        .performance-good .performance-fill {
+            background: linear-gradient(90deg, #22d3ee, #60a5fa);
+        }
+
+        .performance-average .performance-fill {
+            background: linear-gradient(90deg, var(--warning), #fbbf24);
+        }
+
+        .performance-below .performance-fill {
+            background: linear-gradient(90deg, var(--orange), #fb923c);
+        }
+
+        .performance-poor .performance-fill {
+            background: linear-gradient(90deg, var(--danger), #f87171);
+        }
+
+        .performance-value {
+            min-width: 60px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .performance-outstanding { color: var(--emerald); }
+        .performance-excellent { color: var(--success); }
+        .performance-good { color: var(--cyan); }
+        .performance-average { color: var(--warning); }
+        .performance-below { color: var(--orange); }
+        .performance-poor { color: var(--danger); }
+
+        /* Distribution Bars */
+        .distribution-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .distribution-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .distribution-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(4px);
+        }
+
+        .distribution-bar {
+            flex: 1;
+            height: 36px;
+            background: var(--bg-main);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .distribution-fill {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 8px;
+        }
+
+        .distribution-label {
+            min-width: 140px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .distribution-count {
+            min-width: 40px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Real-time Status Indicators */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-online {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            animation: pulse-glow 2s infinite;
+        }
+
+        .status-away {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-offline {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        /* Enhanced Animations */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .performance-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+                align-items: stretch;
+            }
+
+            .controls {
+                justify-content: center;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .distribution-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Dark theme enhancements */
+        .glassmorphism {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: loading-shimmer 1.5s infinite;
+        }
+
+        @keyframes loading-shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Enhanced Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-icon">APM</div>
+                    <div class="title-section">
+                        <h1>Agent Performance Metrics</h1>
+                        <p class="subtitle">Advanced real-time analytics and comprehensive performance insights</p>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="btn refresh" onclick="refreshData()">
+                        <span>🔄</span> Refresh Data
+                    </button>
+                    <button class="btn export" onclick="exportData()">
+                        <span>📊</span> Export CSV
+                    </button>
+                    <select class="btn" onchange="filterByTimeRange(this.value)" style="background: var(--bg-hover);">
+                        <option value="today">Today</option>
+                        <option value="week" selected>This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="quarter">This Quarter</option>
+                        <option value="year">This Year</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced Filters -->
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Search agents by name, ID, or department..." id="searchInput">
+                </div>
+                <select class="filter-select" id="departmentFilter">
+                    <option value="all">All Departments</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Technical Support">Technical Support</option>
+                    <option value="Customer Service">Customer Service</option>
+                    <option value="Billing">Billing</option>
+                </select>
+                <select class="filter-select" id="shiftFilter">
+                    <option value="all">All Shifts</option>
+                    <option value="morning">Morning (6AM-2PM)</option>
+                    <option value="afternoon">Afternoon (2PM-10PM)</option>
+                    <option value="night">Night (10PM-6AM)</option>
+                </select>
+                <div class="results-info">
+                    <span>📊</span>
+                    <span id="resultsCount">Showing 35 agents</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Performance Overview -->
+        <div class="metrics-overview">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">Team Average Performance</div>
+                    <div class="metric-icon">📊</div>
+                </div>
+                <div class="metric-value" id="avgPerformance">87.4%</div>
+                <div class="metric-subtitle">Overall team performance score</div>
+                <div class="metric-trend trend-up" id="performanceTrend">
+                    <span>↗️</span>
+                    <span>+2.4% vs last period</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">Top Performer</div>
+                    <div class="metric-icon">🏆</div>
+                </div>
+                <div class="metric-value" id="topPerformerScore">96.2%</div>
+                <div class="metric-subtitle" id="topPerformerName">Sarah Chen - Sales Department</div>
+                <div class="metric-trend trend-up">
+                    <span>⭐</span>
+                    <span>Outstanding performance</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">Above Target (85%)</div>
+                    <div class="metric-icon">🎯</div>
+                </div>
+                <div class="metric-value" id="aboveTarget">28/35</div>
+                <div class="metric-subtitle" id="targetPercentage">80% of team meeting targets</div>
+                <div class="metric-trend trend-up">
+                    <span>📈</span>
+                    <span>+5 agents this week</span>
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">Total Interactions</div>
+                    <div class="metric-icon">💬</div>
+                </div>
+                <div class="metric-value" id="totalInteractions">3,847</div>
+                <div class="metric-subtitle">Handled this period</div>
+                <div class="metric-trend trend-up">
+                    <span>📞</span>
+                    <span>+412 vs last week</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secondary Metrics -->
+        <div class="secondary-metrics">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">Avg Customer Satisfaction</div>
+                    <div class="metric-icon">⭐</div>
+                </div>
+                <div class="metric-value" id="avgCsat">4.6/5.0</div>
+                <div class="metric-subtitle">Customer rating average</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">Avg Handle Time</div>
+                    <div class="metric-icon">⏱️</div>
+                </div>
+                <div class="metric-value" id="avgHandleTime">5.2s</div>
+                <div class="metric-subtitle">Per interaction</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-label">First Call Resolution</div>
+                    <div class="metric-icon">✅</div>
+                </div>
+                <div class="metric-value" id="avgFcr">84.3%</div>
+                <div class="metric-subtitle">Issues resolved on first contact</div>
+            </div>
+        </div>
+
+        <!-- Performance Analysis Charts -->
+        <div class="performance-grid">
+            <!-- Time Series Chart -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span>📈</span>
+                    Performance Trends - Last 7 Days
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="performanceTrendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Distribution Chart -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span>🥧</span>
+                    Performance Distribution
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="performanceDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Department Comparison Chart -->
+        <div class="chart-container">
+            <div class="chart-title">
+                <span>🏢</span>
+                Department Performance Comparison
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="departmentComparisonChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Enhanced Agent Performance Table -->
+        <div class="performance-table-container">
+            <div class="table-header">
+                <div class="chart-title">
+                    <span>👥</span>
+                    Individual Agent Performance Analytics
+                </div>
+                <div class="table-controls">
+                    <select class="filter-select" id="sortBy">
+                        <option value="performance">Sort by Performance</option>
+                        <option value="name">Sort by Name</option>
+                        <option value="department">Sort by Department</option>
+                        <option value="calls">Sort by Calls Handled</option>
+                        <option value="satisfaction">Sort by CSAT</option>
+                    </select>
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="agentTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortTable('rank')">Rank 📊</th>
+                            <th onclick="sortTable('name')">Agent Details 👤</th>
+                            <th onclick="sortTable('department')">Department 🏢</th>
+                            <th onclick="sortTable('performance')">Current Performance 📈</th>
+                            <th onclick="sortTable('week')">7-Day Avg 📅</th>
+                            <th onclick="sortTable('month')">30-Day Avg 📆</th>
+                            <th onclick="sortTable('calls')">Calls Handled 📞</th>
+                            <th onclick="sortTable('satisfaction')">CSAT ⭐</th>
+                            <th onclick="sortTable('fcr')">FCR % ✅</th>
+                            <th onclick="sortTable('status')">Status 🔴</th>
+                        </tr>
+                    </thead>
+                    <tbody id="agentTableBody">
+                        <!-- Table rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Performance Distribution Breakdown -->
+        <div class="performance-grid">
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span>📊</span>
+                    Performance Categories Breakdown
+                </div>
+                <div class="distribution-section">
+                    <div class="distribution-item">
+                        <span class="distribution-label">Outstanding (95%+)</span>
+                        <div class="distribution-bar">
+                            <div class="distribution-fill performance-outstanding" style="width: 15%; background: var(--emerald);" id="outstanding-bar">
+                                5 agents
+                            </div>
+                        </div>
+                        <span class="distribution-count performance-outstanding" id="outstanding-count">5</span>
+                    </div>
+                    <div class="distribution-item">
+                        <span class="distribution-label">Excellent (90-94%)</span>
+                        <div class="distribution-bar">
+                            <div class="distribution-fill performance-excellent" style="width: 25%; background: var(--success);" id="excellent-bar">
+                                8 agents
+                            </div>
+                        </div>
+                        <span class="distribution-count performance-excellent" id="excellent-count">8</span>
+                    </div>
+                    <div class="distribution-item">
+                        <span class="distribution-label">Good (85-89%)</span>
+                        <div class="distribution-bar">
+                            <div class="distribution-fill performance-good" style="width: 45%; background: var(--cyan);" id="good-bar">
+                                15 agents
+                            </div>
+                        </div>
+                        <span class="distribution-count performance-good" id="good-count">15</span>
+                    </div>
+                    <div class="distribution-item">
+                        <span class="distribution-label">Average (75-84%)</span>
+                        <div class="distribution-bar">
+                            <div class="distribution-fill performance-average" style="width: 12%; background: var(--warning);" id="average-bar">
+                                4 agents
+                            </div>
+                        </div>
+                        <span class="distribution-count performance-average" id="average-count">4</span>
+                    </div>
+                    <div class="distribution-item">
+                        <span class="distribution-label">Below Average (65-74%)</span>
+                        <div class="distribution-bar">
+                            <div class="distribution-fill performance-below" style="width: 6%; background: var(--orange);" id="below-bar">
+                                2 agents
+                            </div>
+                        </div>
+                        <span class="distribution-count performance-below" id="below-count">2</span>
+                    </div>
+                    <div class="distribution-item">
+                        <span class="distribution-label">Needs Improvement (<65%)</span>
+                        <div class="distribution-bar">
+                            <div class="distribution-fill performance-poor" style="width: 3%; background: var(--danger);" id="poor-bar">
+                                1 agent
+                            </div>
+                        </div>
+                        <span class="distribution-count performance-poor" id="poor-count">1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Performers Spotlight -->
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span>🌟</span>
+                    Top 5 Performers This Week
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="topPerformersChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Enhanced agent performance data with more comprehensive metrics
+        let agentData = [
+            { id: 'AGT001', name: 'Sarah Chen', department: 'Sales', shift: 'morning', current: 96.2, week: 94.8, month: 93.5, trend: 'up', calls: 127, satisfaction: 4.8, fcr: 89.5, handleTime: 4.2, status: 'online' },
+            { id: 'AGT002', name: 'Michael Rodriguez', department: 'Technical Support', shift: 'afternoon', current: 94.5, week: 93.2, month: 92.1, trend: 'up', calls: 98, satisfaction: 4.6, fcr: 82.1, handleTime: 7.1, status: 'online' },
+            { id: 'AGT003', name: 'Emma Watson', department: 'Customer Service', shift: 'morning', current: 92.8, week: 91.5, month: 90.8, trend: 'up', calls: 143, satisfaction: 4.7, fcr: 87.3, handleTime: 3.8, status: 'online' },
+            { id: 'AGT004', name: 'James Wilson', department: 'Sales', shift: 'afternoon', current: 91.3, week: 92.0, month: 91.5, trend: 'down', calls: 89, satisfaction: 4.4, fcr: 78.9, handleTime: 5.2, status: 'away' },
+            { id: 'AGT005', name: 'Lisa Anderson', department: 'Technical Support', shift: 'night', current: 90.7, week: 89.8, month: 88.9, trend: 'up', calls: 76, satisfaction: 4.3, fcr: 84.2, handleTime: 8.3, status: 'online' },
+            { id: 'AGT006', name: 'David Kim', department: 'Customer Service', shift: 'morning', current: 89.2, week: 88.5, month: 87.8, trend: 'up', calls: 156, satisfaction: 4.5, fcr: 91.7, handleTime: 3.2, status: 'online' },
+            { id: 'AGT007', name: 'Jennifer Brown', department: 'Sales', shift: 'afternoon', current: 88.9, week: 88.9, month: 89.1, trend: 'stable', calls: 102, satisfaction: 4.2, fcr: 76.4, handleTime: 4.8, status: 'online' },
+            { id: 'AGT008', name: 'Robert Taylor', department: 'Customer Service', shift: 'night', current: 87.5, week: 86.8, month: 85.9, trend: 'up', calls: 134, satisfaction: 4.4, fcr: 83.8, handleTime: 4.1, status: 'online' },
+            { id: 'AGT009', name: 'Maria Garcia', department: 'Technical Support', shift: 'morning', current: 86.8, week: 87.2, month: 87.5, trend: 'down', calls: 87, satisfaction: 4.1, fcr: 79.3, handleTime: 6.9, status: 'away' },
+            { id: 'AGT010', name: 'John Smith', department: 'Sales', shift: 'afternoon', current: 86.2, week: 85.5, month: 84.8, trend: 'up', calls: 94, satisfaction: 4.0, fcr: 74.2, handleTime: 5.5, status: 'online' },
+            { id: 'AGT011', name: 'Amanda Miller', department: 'Customer Service', shift: 'morning', current: 85.7, week: 85.3, month: 85.0, trend: 'up', calls: 118, satisfaction: 4.3, fcr: 86.1, handleTime: 3.9, status: 'online' },
+            { id: 'AGT012', name: 'Daniel Lee', department: 'Technical Support', shift: 'afternoon', current: 84.9, week: 84.5, month: 84.2, trend: 'up', calls: 92, satisfaction: 4.2, fcr: 81.7, handleTime: 7.8, status: 'online' },
+            { id: 'AGT013', name: 'Sophie Martin', department: 'Sales', shift: 'night', current: 84.3, week: 85.1, month: 85.5, trend: 'down', calls: 79, satisfaction: 4.0, fcr: 73.9, handleTime: 5.8, status: 'away' },
+            { id: 'AGT014', name: 'Chris Johnson', department: 'Customer Service', shift: 'morning', current: 83.8, week: 83.2, month: 82.8, trend: 'up', calls: 129, satisfaction: 4.1, fcr: 85.4, handleTime: 4.3, status: 'online' },
+            { id: 'AGT015', name: 'Rachel Green', department: 'Billing', shift: 'afternoon', current: 83.2, week: 82.8, month: 82.5, trend: 'up', calls: 145, satisfaction: 4.4, fcr: 88.2, handleTime: 2.9, status: 'online' },
+            { id: 'AGT016', name: 'Tom Harris', department: 'Technical Support', shift: 'night', current: 82.5, week: 82.0, month: 81.8, trend: 'up', calls: 68, satisfaction: 3.9, fcr: 77.3, handleTime: 9.1, status: 'online' },
+            { id: 'AGT017', name: 'Nancy White', department: 'Sales', shift: 'morning', current: 81.8, week: 82.3, month: 82.7, trend: 'down', calls: 86, satisfaction: 3.8, fcr: 71.2, handleTime: 6.2, status: 'away' },
+            { id: 'AGT018', name: 'Kevin Zhang', department: 'Customer Service', shift: 'afternoon', current: 81.2, week: 80.8, month: 80.5, trend: 'up', calls: 112, satisfaction: 4.0, fcr: 82.6, handleTime: 4.7, status: 'online' },
+            { id: 'AGT019', name: 'Michelle Davis', department: 'Billing', shift: 'night', current: 80.5, week: 80.2, month: 79.8, trend: 'up', calls: 134, satisfaction: 4.2, fcr: 87.9, handleTime: 3.1, status: 'online' },
+            { id: 'AGT020', name: 'Brian Moore', department: 'Technical Support', shift: 'morning', current: 79.8, week: 79.5, month: 79.2, trend: 'up', calls: 71, satisfaction: 3.7, fcr: 74.8, handleTime: 8.7, status: 'online' },
+            { id: 'AGT021', name: 'Jessica Thompson', department: 'Sales', shift: 'afternoon', current: 78.9, week: 79.5, month: 80.1, trend: 'down', calls: 83, satisfaction: 3.6, fcr: 69.5, handleTime: 6.8, status: 'away' },
+            { id: 'AGT022', name: 'Steven Clark', department: 'Customer Service', shift: 'night', current: 77.5, week: 77.0, month: 76.5, trend: 'up', calls: 97, satisfaction: 3.9, fcr: 79.1, handleTime: 5.3, status: 'online' },
+            { id: 'AGT023', name: 'Laura Martinez', department: 'Billing', shift: 'morning', current: 76.2, week: 76.8, month: 77.2, trend: 'down', calls: 128, satisfaction: 4.1, fcr: 85.3, handleTime: 3.4, status: 'online' },
+            { id: 'AGT024', name: 'Paul Robinson', department: 'Technical Support', shift: 'afternoon', current: 74.8, week: 74.2, month: 73.8, trend: 'up', calls: 62, satisfaction: 3.5, fcr: 71.4, handleTime: 9.8, status: 'away' },
+            { id: 'AGT025', name: 'Karen Lewis', department: 'Sales', shift: 'night', current: 73.5, week: 74.1, month: 74.5, trend: 'down', calls: 74, satisfaction: 3.4, fcr: 66.7, handleTime: 7.1, status: 'online' },
+            { id: 'AGT026', name: 'Mark Walker', department: 'Customer Service', shift: 'morning', current: 72.1, week: 71.5, month: 71.0, trend: 'up', calls: 89, satisfaction: 3.6, fcr: 75.8, handleTime: 5.9, status: 'online' },
+            { id: 'AGT027', name: 'Helen Hall', department: 'Billing', shift: 'afternoon', current: 70.8, week: 71.2, month: 71.5, trend: 'down', calls: 116, satisfaction: 3.8, fcr: 81.2, handleTime: 4.1, status: 'away' },
+            { id: 'AGT028', name: 'Gary Allen', department: 'Technical Support', shift: 'night', current: 69.5, week: 69.0, month: 68.5, trend: 'up', calls: 54, satisfaction: 3.3, fcr: 68.9, handleTime: 10.2, status: 'online' },
+            { id: 'AGT029', name: 'Diana Young', department: 'Sales', shift: 'morning', current: 68.2, week: 68.8, month: 69.2, trend: 'down', calls: 67, satisfaction: 3.2, fcr: 62.1, handleTime: 8.3, status: 'away' },
+            { id: 'AGT030', name: 'Frank King', department: 'Customer Service', shift: 'afternoon', current: 65.8, week: 65.2, month: 64.8, trend: 'up', calls: 78, satisfaction: 3.4, fcr: 71.6, handleTime: 6.7, status: 'online' },
+            { id: 'AGT031', name: 'Carol Brown', department: 'Billing', shift: 'night', current: 89.5, week: 88.9, month: 88.2, trend: 'up', calls: 142, satisfaction: 4.6, fcr: 90.1, handleTime: 2.8, status: 'online' },
+            { id: 'AGT032', name: 'Peter Wilson', department: 'Technical Support', shift: 'morning', current: 87.3, week: 86.7, month: 86.1, trend: 'up', calls: 84, satisfaction: 4.3, fcr: 83.7, handleTime: 7.4, status: 'online' },
+            { id: 'AGT033', name: 'Sandra Lee', department: 'Sales', shift: 'afternoon', current: 85.9, week: 85.4, month: 84.8, trend: 'up', calls: 95, satisfaction: 4.1, fcr: 77.8, handleTime: 5.1, status: 'online' },
+            { id: 'AGT034', name: 'Robert Chang', department: 'Customer Service', shift: 'night', current: 84.7, week: 84.2, month: 83.9, trend: 'up', calls: 108, satisfaction: 4.2, fcr: 84.6, handleTime: 4.4, status: 'online' },
+            { id: 'AGT035', name: 'Linda Smith', department: 'Billing', shift: 'morning', current: 82.3, week: 81.9, month: 81.5, trend: 'up', calls: 139, satisfaction: 4.3, fcr: 88.5, handleTime: 3.3, status: 'online' }
+        ];
+
+        let filteredData = [...agentData];
+        let currentSort = { field: 'current', direction: 'desc' };
+
+        // Chart instances
+        let trendChart, distributionChart, departmentChart, topPerformersChart;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            populateTable();
+            updateMetrics();
+            setupEventListeners();
+
+            // Auto-refresh every 30 seconds
+            setInterval(autoRefresh, 30000);
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            document.getElementById('departmentFilter').addEventListener('change', handleFilters);
+            document.getElementById('shiftFilter').addEventListener('change', handleFilters);
+            document.getElementById('sortBy').addEventListener('change', handleSort);
+        }
+
+        // Enhanced search and filter functionality
+        function handleSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            applyFilters(searchTerm);
+        }
+
+        function handleFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            applyFilters(searchTerm);
+        }
+
+        function applyFilters(searchTerm = '') {
+            const departmentFilter = document.getElementById('departmentFilter').value;
+            const shiftFilter = document.getElementById('shiftFilter').value;
+
+            filteredData = agentData.filter(agent => {
+                const matchesSearch = agent.name.toLowerCase().includes(searchTerm) ||
+                                    agent.id.toLowerCase().includes(searchTerm) ||
+                                    agent.department.toLowerCase().includes(searchTerm);
+                const matchesDepartment = departmentFilter === 'all' || agent.department === departmentFilter;
+                const matchesShift = shiftFilter === 'all' || agent.shift === shiftFilter;
+
+                return matchesSearch && matchesDepartment && matchesShift;
+            });
+
+            populateTable();
+            updateMetrics();
+            updateDistributionChart();
+            document.getElementById('resultsCount').textContent = `Showing ${filteredData.length} agents`;
+        }
+
+        // Enhanced sorting functionality
+        function handleSort(e) {
+            const sortField = e.target.value;
+            sortData(sortField);
+        }
+
+        function sortTable(field) {
+            if (currentSort.field === field) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                currentSort.direction = 'desc';
+            }
+            sortData(field);
+        }
+
+        function sortData(field) {
+            filteredData.sort((a, b) => {
+                let aVal = a[field];
+                let bVal = b[field];
+
+                if (field === 'name') {
+                    aVal = a.name;
+                    bVal = b.name;
+                } else if (field === 'performance') {
+                    aVal = a.current;
+                    bVal = b.current;
+                }
+
+                if (typeof aVal === 'string') {
+                    return currentSort.direction === 'asc' ?
+                        aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                } else {
+                    return currentSort.direction === 'asc' ? aVal - bVal : bVal - aVal;
+                }
+            });
+
+            populateTable();
+        }
+
+        // Performance classification function
+        function getPerformanceClass(value) {
+            if (value >= 95) return 'performance-outstanding';
+            if (value >= 90) return 'performance-excellent';
+            if (value >= 85) return 'performance-good';
+            if (value >= 75) return 'performance-average';
+            if (value >= 65) return 'performance-below';
+            return 'performance-poor';
+        }
+
+        // Generate agent initials
+        function getAgentInitials(name) {
+            return name.split(' ').map(n => n[0]).join('');
+        }
+
+        // Get status indicator
+        function getStatusIndicator(status) {
+            const statusMap = {
+                'online': '<span class="status-indicator status-online">🟢 Online</span>',
+                'away': '<span class="status-indicator status-away">🟡 Away</span>',
+                'offline': '<span class="status-indicator status-offline">🔴 Offline</span>'
+            };
+            return statusMap[status] || statusMap['offline'];
+        }
+
+        // Enhanced table population
+        function populateTable() {
+            const tbody = document.getElementById('agentTableBody');
+            tbody.innerHTML = '';
+
+            filteredData.forEach((agent, index) => {
+                const row = document.createElement('tr');
+                const perfClass = getPerformanceClass(agent.current);
+
+                row.innerHTML = `
+                    <td style="text-align: center; font-weight: 600; color: var(--text-secondary);">${index + 1}</td>
+                    <td>
+                        <div class="agent-info">
+                            <div class="agent-avatar">${getAgentInitials(agent.name)}</div>
+                            <div class="agent-details">
+                                <div class="agent-name">${agent.name}</div>
+                                <div class="agent-meta">ID: ${agent.id}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="department-info">
+                            <div class="dept-name">${agent.department}</div>
+                            <div class="shift-info">${agent.shift} shift</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="performance-bar-container">
+                            <div class="performance-bar">
+                                <div class="performance-fill ${perfClass}" style="width: ${agent.current}%"></div>
+                            </div>
+                            <span class="performance-value ${perfClass}">${agent.current.toFixed(1)}%</span>
+                        </div>
+                    </td>
+                    <td class="${getPerformanceClass(agent.week)}" style="font-weight: 600;">${agent.week.toFixed(1)}%</td>
+                    <td class="${getPerformanceClass(agent.month)}" style="font-weight: 600;">${agent.month.toFixed(1)}%</td>
+                    <td style="font-weight: 600; color: var(--text-primary);">${agent.calls}</td>
+                    <td style="font-weight: 600;">
+                        <span style="color: var(--warning);">⭐</span>
+                        <span style="color: var(--text-primary);">${agent.satisfaction.toFixed(1)}</span>
+                    </td>
+                    <td style="font-weight: 600; color: var(--text-primary);">${agent.fcr.toFixed(1)}%</td>
+                    <td>${getStatusIndicator(agent.status)}</td>
+                `;
+
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update overview metrics
+        function updateMetrics() {
+            const avgPerf = filteredData.reduce((acc, agent) => acc + agent.current, 0) / filteredData.length;
+            const topPerformer = filteredData.reduce((top, agent) => agent.current > top.current ? agent : top, filteredData[0]);
+            const aboveTarget = filteredData.filter(agent => agent.current >= 85).length;
+            const totalCalls = filteredData.reduce((acc, agent) => acc + agent.calls, 0);
+            const avgSat = filteredData.reduce((acc, agent) => acc + agent.satisfaction, 0) / filteredData.length;
+            const avgHandle = filteredData.reduce((acc, agent) => acc + agent.handleTime, 0) / filteredData.length;
+            const avgFcr = filteredData.reduce((acc, agent) => acc + agent.fcr, 0) / filteredData.length;
+
+            document.getElementById('avgPerformance').textContent = `${avgPerf.toFixed(1)}%`;
+            document.getElementById('topPerformerScore').textContent = `${topPerformer?.current.toFixed(1) || '0'}%`;
+            document.getElementById('topPerformerName').textContent = `${topPerformer?.name || 'N/A'} - ${topPerformer?.department || 'N/A'}`;
+            document.getElementById('aboveTarget').textContent = `${aboveTarget}/${filteredData.length}`;
+            document.getElementById('targetPercentage').textContent = `${((aboveTarget / filteredData.length) * 100).toFixed(0)}% of team meeting targets`;
+            document.getElementById('totalInteractions').textContent = totalCalls.toLocaleString();
+            document.getElementById('avgCsat').textContent = `${avgSat.toFixed(1)}/5.0`;
+            document.getElementById('avgHandleTime').textContent = `${avgHandle.toFixed(1)}s`;
+            document.getElementById('avgFcr').textContent = `${avgFcr.toFixed(1)}%`;
+
+            updateDistributionBars();
+        }
+
+        // Update distribution bars
+        function updateDistributionBars() {
+            const outstanding = filteredData.filter(a => a.current >= 95).length;
+            const excellent = filteredData.filter(a => a.current >= 90 && a.current < 95).length;
+            const good = filteredData.filter(a => a.current >= 85 && a.current < 90).length;
+            const average = filteredData.filter(a => a.current >= 75 && a.current < 85).length;
+            const below = filteredData.filter(a => a.current >= 65 && a.current < 75).length;
+            const poor = filteredData.filter(a => a.current < 65).length;
+
+            const total = filteredData.length;
+
+            function updateBar(id, count, total) {
+                const percentage = total > 0 ? (count / total) * 100 : 0;
+                const bar = document.getElementById(`${id}-bar`);
+                const countEl = document.getElementById(`${id}-count`);
+
+                if (bar) {
+                    bar.style.width = `${percentage}%`;
+                    bar.textContent = `${count} agent${count !== 1 ? 's' : ''}`;
+                }
+                if (countEl) {
+                    countEl.textContent = count;
+                }
+            }
+
+            updateBar('outstanding', outstanding, total);
+            updateBar('excellent', excellent, total);
+            updateBar('good', good, total);
+            updateBar('average', average, total);
+            updateBar('below', below, total);
+            updateBar('poor', poor, total);
+        }
+
+        // Initialize all charts
+        function initializeCharts() {
+            initPerformanceTrendChart();
+            initDistributionChart();
+            initDepartmentChart();
+            initTopPerformersChart();
+        }
+
+        // Performance trend chart
+        function initPerformanceTrendChart() {
+            const ctx = document.getElementById('performanceTrendChart').getContext('2d');
+            trendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    datasets: [{
+                        label: 'Team Average Performance',
+                        data: [85.2, 86.1, 85.8, 87.2, 87.8, 87.5, 87.4],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#6366f1',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }, {
+                        label: 'Target (85%)',
+                        data: [85, 85, 85, 85, 85, 85, 85],
+                        borderColor: '#10b981',
+                        borderDash: [8, 5],
+                        fill: false,
+                        pointRadius: 0,
+                        tension: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#94a3b8',
+                                font: { size: 12, weight: '500' },
+                                usePointStyle: true,
+                                padding: 20
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            min: 80,
+                            max: 90,
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 11 },
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)',
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            },
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.05)',
+                                drawBorder: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // Distribution chart
+        function initDistributionChart() {
+            const ctx = document.getElementById('performanceDistributionChart').getContext('2d');
+            distributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Outstanding (95%+)', 'Excellent (90-94%)', 'Good (85-89%)', 'Average (75-84%)', 'Below Average (65-74%)', 'Poor (<65%)'],
+                    datasets: [{
+                        data: [5, 8, 15, 4, 2, 1],
+                        backgroundColor: [
+                            '#10b981',
+                            '#059669',
+                            '#22d3ee',
+                            '#f59e0b',
+                            '#f97316',
+                            '#ef4444'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#94a3b8',
+                                padding: 15,
+                                font: { size: 11, weight: '500' },
+                                usePointStyle: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Department comparison chart
+        function initDepartmentChart() {
+            const ctx = document.getElementById('departmentComparisonChart').getContext('2d');
+
+            const deptData = agentData.reduce((acc, agent) => {
+                if (!acc[agent.department]) {
+                    acc[agent.department] = { total: 0, count: 0 };
+                }
+                acc[agent.department].total += agent.current;
+                acc[agent.department].count++;
+                return acc;
+            }, {});
+
+            const departments = Object.keys(deptData);
+            const averages = departments.map(dept => (deptData[dept].total / deptData[dept].count).toFixed(1));
+
+            departmentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: departments,
+                    datasets: [{
+                        label: 'Average Performance (%)',
+                        data: averages,
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(34, 211, 238, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(168, 85, 247, 0.8)'
+                        ],
+                        borderRadius: 8,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 70,
+                            max: 95,
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 11 },
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)',
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Top performers chart
+        function initTopPerformersChart() {
+            const ctx = document.getElementById('topPerformersChart').getContext('2d');
+            const topFive = agentData.slice(0, 5);
+
+            topPerformersChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: topFive.map(agent => agent.name.split(' ')[1]),
+                    datasets: [{
+                        label: 'Performance %',
+                        data: topFive.map(agent => agent.current),
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.9)',
+                            'rgba(34, 211, 238, 0.9)',
+                            'rgba(99, 102, 241, 0.9)',
+                            'rgba(168, 85, 247, 0.9)',
+                            'rgba(251, 191, 36, 0.9)'
+                        ],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            min: 85,
+                            max: 100,
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 11 },
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)',
+                                drawBorder: false
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update distribution chart
+        function updateDistributionChart() {
+            if (distributionChart) {
+                const outstanding = filteredData.filter(a => a.current >= 95).length;
+                const excellent = filteredData.filter(a => a.current >= 90 && a.current < 95).length;
+                const good = filteredData.filter(a => a.current >= 85 && a.current < 90).length;
+                const average = filteredData.filter(a => a.current >= 75 && a.current < 85).length;
+                const below = filteredData.filter(a => a.current >= 65 && a.current < 75).length;
+                const poor = filteredData.filter(a => a.current < 65).length;
+
+                distributionChart.data.datasets[0].data = [outstanding, excellent, good, average, below, poor];
+                distributionChart.update();
+            }
+        }
+
+        // Refresh data with animation
+        function refreshData() {
+            // Add loading state
+            document.querySelector('.dashboard-container').classList.add('loading');
+
+            setTimeout(() => {
+                // Simulate realistic data fluctuations
+                agentData.forEach(agent => {
+                    const change = (Math.random() - 0.5) * 3;
+                    agent.current = Math.max(60, Math.min(100, agent.current + change));
+                    agent.current = Math.round(agent.current * 10) / 10;
+
+                    // Update other metrics
+                    agent.calls = Math.max(50, agent.calls + Math.floor((Math.random() - 0.5) * 20));
+                    agent.satisfaction = Math.max(3, Math.min(5, agent.satisfaction + (Math.random() - 0.5) * 0.2));
+                    agent.fcr = Math.max(60, Math.min(100, agent.fcr + (Math.random() - 0.5) * 3));
+
+                    // Randomly update status
+                    if (Math.random() < 0.1) {
+                        const statuses = ['online', 'away', 'offline'];
+                        agent.status = statuses[Math.floor(Math.random() * statuses.length)];
+                    }
+                });
+
+                // Re-sort by performance
+                agentData.sort((a, b) => b.current - a.current);
+
+                // Apply current filters
+                applyFilters(document.getElementById('searchInput').value.toLowerCase());
+
+                // Update charts
+                if (trendChart) {
+                    trendChart.data.datasets[0].data = trendChart.data.datasets[0].data.map(d =>
+                        Math.max(80, Math.min(95, d + (Math.random() - 0.5) * 2))
+                    );
+                    trendChart.update();
+                }
+
+                if (topPerformersChart) {
+                    const newTopFive = agentData.slice(0, 5);
+                    topPerformersChart.data.labels = newTopFive.map(agent => agent.name.split(' ')[1]);
+                    topPerformersChart.data.datasets[0].data = newTopFive.map(agent => agent.current);
+                    topPerformersChart.update();
+                }
+
+                document.querySelector('.dashboard-container').classList.remove('loading');
+
+                // Show success notification
+                showNotification('Data refreshed successfully! 📊', 'success');
+            }, 1500);
+        }
+
+        // Auto-refresh functionality
+        function autoRefresh() {
+            // Simulate small changes every 30 seconds
+            agentData.forEach(agent => {
+                if (Math.random() < 0.3) { // 30% chance of change
+                    const change = (Math.random() - 0.5) * 1;
+                    agent.current = Math.max(60, Math.min(100, agent.current + change));
+                    agent.current = Math.round(agent.current * 10) / 10;
+                }
+            });
+
+            applyFilters(document.getElementById('searchInput').value.toLowerCase());
+        }
+
+        // Export enhanced data
+        function exportData() {
+            const csv = [
+                ['Rank', 'Agent ID', 'Agent Name', 'Department', 'Shift', 'Current Performance', '7-Day Average', '30-Day Average', 'Trend', 'Calls Handled', 'Customer Satisfaction', 'First Call Resolution', 'Avg Handle Time', 'Status'],
+                ...filteredData.map((agent, index) => [
+                    index + 1,
+                    agent.id,
+                    agent.name,
+                    agent.department,
+                    agent.shift,
+                    agent.current.toFixed(1) + '%',
+                    agent.week.toFixed(1) + '%',
+                    agent.month.toFixed(1) + '%',
+                    agent.trend,
+                    agent.calls,
+                    agent.satisfaction.toFixed(1),
+                    agent.fcr.toFixed(1) + '%',
+                    agent.handleTime.toFixed(1) + 's',
+                    agent.status
+                ])
+            ].map(row => row.join(',')).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `agent-performance-metrics-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+
+            showNotification('Data exported successfully! 📁', 'success');
+        }
+
+        // Time range filtering
+        function filterByTimeRange(range) {
+            console.log('Filtering by time range:', range);
+            showNotification(`Switched to ${range} view 📅`, 'info');
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--primary)'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add slide animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
